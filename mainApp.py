@@ -2,7 +2,7 @@ from module.dashboard import Autentikasi
 from module.Manager.UserManager import UserManager
 
 from module.dashboard.AdminDashboard import main_menu as admin_menu
-from module.dashboard.EmployeeDashboard import employee_main_menu
+from module.dashboard.EmployeeDashboard import menu_utama_employee
 from module.dashboard.SupplierDashboard import supplier_main_menu
 from module.dashboard.UserDashboard import user_main_menu
 
@@ -15,7 +15,7 @@ if hasattr(currentUser, 'role'):
     if role == "admin":
         admin_menu()
     elif role == "employee":
-        employee_main_menu()
+        menu_utama_employee()
     elif role == "supplier":
         supplier_main_menu()
     elif role == "user":

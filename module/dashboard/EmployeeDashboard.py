@@ -1,10 +1,11 @@
 # dashboard_employee.py
 from rich.console import Console
 from rich.panel import Panel
+from datetime import datetime
 
 console = Console()
 
-def employee_main_menu():
+def menu_utama_employee():
     while True:
         console.clear()
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Karyawan![/bold cyan]\nGunakan dashboard ini untuk mengelola semua data barang, pengguna, dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Karyawan"))
@@ -45,7 +46,27 @@ def menu_barang_employee():
 """)
         pilihan = input("Masukkan pilihan (1-6): ")
         if pilihan == "1":
-            pass
+            name = input("Masukkan nama barang: ")
+            category = input("Masukkan kategori barang: ")
+            stock = int(input("Masukkan jumlah stok barang(dalam angka): "))
+            price = int(input("Masukkan harga awal barang(dalam angka): "))
+            sell_price = int(input("Masukkan harga jual barang(dalam angka): "))
+            entry_date = datetime.now().isoformat()
+            description = input("Masukkan deskripsi barang: ")
+            supplier = input("Masukkan nama supplier")
+            status = input("Aktif/Tidak Aktif: ")
+            
+            item_baru = {
+            "name": name,
+            "category": category,
+            "stock": stock,
+            "price": price,
+            "sellPrice": sell_price,
+            "entrydate": entry_date,
+            "desc": description,
+            "supplier": supplier,
+            "status": status
+            }
         elif pilihan == "2":
             pass
         elif pilihan == "3":
@@ -55,7 +76,8 @@ def menu_barang_employee():
         elif pilihan == "5":
             pass
         elif pilihan == "6":
-            pass
+            # kembali ke menu utama
+            return
         else:
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 def menu_supplier_employee():
@@ -82,7 +104,8 @@ def menu_supplier_employee():
         elif pilihan == "5":
             pass
         elif pilihan == "6":
-            pass
+            # kembali ke menu utama
+            return
         else:
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 def menu_peminjam_employee():
@@ -112,8 +135,10 @@ def menu_peminjam_employee():
         elif pilihan == "6":
             pass
         elif pilihan == "7":
-            pass
+            # kembali ke menu utama
+            return
         else:
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 def menu_laporan_employee():
    pass
+
