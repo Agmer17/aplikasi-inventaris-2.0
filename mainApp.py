@@ -1,4 +1,5 @@
 from module.dashboard import Autentikasi
+from module.Manager.UserManager import UserManager
 
-Autentikasi.login_screen()
-Autentikasi.login_screen()
+data = UserManager("data/user.json")
+currentUser = Autentikasi.login_screen(data)

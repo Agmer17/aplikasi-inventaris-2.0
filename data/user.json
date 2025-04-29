@@ -1,0 +1,68 @@
+{
+    "agmer": {
+        "name": "agmer",
+        "email": "agmer@hotmail.com",
+        "password": "12345",
+        "role": "admin"
+    },
+    "dudung": {
+        "name": "dadang",
+        "email": "supplier1@gmail.com",
+        "password": "12345",
+        "role": "supplier"
+    },
+    "hiura_imut": {
+        "name": "hiura mihate",
+        "email": "hiura@gmail.com",
+        "password": "12345",
+        "role": "employee"
+    },
+    "karyawan": {
+        "name": "karyawan",
+        "email": "employee@gmail.com",
+        "password": "12345",
+        "role": "employee"
+    },
+    "astolfo_pink": {
+        "name": "Astolfo",
+        "email": "astolfo@example.com",
+        "password": "password456",
+        "role": "employee"
+    },
+    "rimuru_sama": {
+        "name": "Rimuru Tempest",
+        "email": "rimuru@example.com",
+        "password": "12345",
+        "role": "admin"
+    },
+    "vash_gun": {
+        "name": "Vash the Stampede",
+        "email": "vash@example.com",
+        "password": "loveandpeace",
+        "role": "admin"
+    },
+    "felix_argyle": {
+        "name": "Ferris Argyle",
+        "email": "felix@example.com",
+        "password": "nyaapass",
+        "role": "employee"
+    },
+    "spike_spiegel": {
+        "name": "Spike Spiegel",
+        "email": "spike@example.com",
+        "password": "bebopblues",
+        "role": "employee"
+    },
+    "anya_forger": {
+        "name": "Anya Forger",
+        "email": "anya@example.com",
+        "password": "wakuwaku",
+        "role": "employee"
+    },
+    "gitsune_san": {
+        "name": "Gitsune",
+        "email": "gitsune@example.com",
+        "password": "kitsunepass",
+        "role": "supplier"
+    }
+}
