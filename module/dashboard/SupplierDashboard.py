@@ -18,7 +18,7 @@ def supplier_main_menu():
         if pilihan == "1":
             menu_barang_employee()
         elif pilihan == "2":
-            menu_laporan_employee()
+            menu_laporan()
         elif pilihan == "3":
             console.print("[bold red]Keluar dari aplikasi...[/bold red]")
             break
