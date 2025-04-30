@@ -197,6 +197,14 @@ class UserManager:
 
         # Simpan perubahan ke file JSON
         self.changeData()
+        
+    def getAllData(self) -> dict[str:object] : 
+        temp = {}
+        
+        for key, val in self.items.items() :
+            temp.update({key : val.getFullData()})
+        
+        return temp
 
 
 
