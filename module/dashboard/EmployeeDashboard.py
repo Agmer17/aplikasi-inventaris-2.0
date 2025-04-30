@@ -2,6 +2,7 @@
 from rich.console import Console
 from rich.panel import Panel
 from datetime import datetime
+import json
 
 console = Console()
 
@@ -46,27 +47,7 @@ def menu_barang_employee():
 """)
         pilihan = input("Masukkan pilihan (1-6): ")
         if pilihan == "1":
-            name = input("Masukkan nama barang: ")
-            category = input("Masukkan kategori barang: ")
-            stock = int(input("Masukkan jumlah stok barang(dalam angka): "))
-            price = int(input("Masukkan harga awal barang(dalam angka): "))
-            sell_price = int(input("Masukkan harga jual barang(dalam angka): "))
-            entry_date = datetime.now().isoformat()
-            description = input("Masukkan deskripsi barang: ")
-            supplier = input("Masukkan nama supplier")
-            status = input("Aktif/Tidak Aktif: ")
-            
-            item_baru = {
-            "name": name,
-            "category": category,
-            "stock": stock,
-            "price": price,
-            "sellPrice": sell_price,
-            "entrydate": entry_date,
-            "desc": description,
-            "supplier": supplier,
-            "status": status
-            }
+            tambah_barang_employee()
         elif pilihan == "2":
             pass
         elif pilihan == "3":
@@ -142,3 +123,68 @@ def menu_peminjam_employee():
 def menu_laporan_employee():
    pass
 
+def tambah_barang_employee():
+            # Kuisioner buat dibikin ke JSON
+            name = input("Masukkan nama barang: ")
+            # Default kalau jawaban kosong
+            if name == "":
+                name = "Nama Belum Diisi"
+            category = input("Masukkan kategori barang: ")
+            # Default kalau jawaban kosong
+            if category == "":
+                category = "-"
+            stock = input("Masukkan jumlah stok barang(dalam angka): ").strip()
+            # Default kalau jawaban kosong
+            if stock == "":
+                stock = -1  # Nilai default
+            else:
+                stock = int(stock)
+            price = input("Masukkan harga awal barang(dalam angka): ")
+            # Default kalau jawaban kosong
+            if price == "":
+                price = -1  # Nilai default
+            else:
+                price = int(price)
+            sell_price = input("Masukkan harga jual barang(dalam angka): ")
+            if sell_price == "":
+                sell_price = -1  # Nilai default
+            else:
+                sell_price = int(sell_price)
+            entry_date = datetime.now().isoformat()
+            description = input("Masukkan deskripsi barang: ")
+            # Default kalau jawaban kosong
+            if description == "":
+                description = "-"
+            supplier = input("Masukkan nama supplier: ")
+            # Default kalau jawaban kosong
+            if supplier == "":
+                supplier= "-"
+            status = input("Aktif/Tidak Aktif: ")
+            # Default kalau jawaban kosong
+            if status == "":
+                supplier= "Aktif"
+            
+            item_baru = {
+            "name": name,
+            "category": category,
+            "stock": stock,
+            "price": price,
+            "sellPrice": sell_price,
+            "entrydate": entry_date,
+            "desc": description,
+            "supplier": supplier,
+            "status": status
+            } 
+            # Reading from a JSON file
+            with open('../../data/items.json', 'r') as file:
+                data = json.load(file)
+
+            # (append new object)
+                data['items'][name] = item_baru
+
+            # Writing back to the file
+            with open('../../data/items.json', 'w') as file:
+                json.dump(data, file, indent=2)
+
+
+menu_utama_employee()
