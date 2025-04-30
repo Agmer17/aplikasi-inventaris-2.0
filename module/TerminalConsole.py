@@ -12,7 +12,7 @@ import time
 
 console = Console(highlight=False, record=True)
 
-def reset_terminal_state():
+def reset_terminal_state(console=console):
     # Clear sistem operasi
     os.system('cls' if os.name == 'nt' else 'clear')
     

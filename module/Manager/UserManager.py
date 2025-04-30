@@ -136,6 +136,14 @@ class UserManager:
             print("username telah terdaftar, harap masukan username lain")
             return False
     
+    def getDataByRole(self, paramUsername:str) -> dict[str: AdminSchema|EmployeeSchema|SupplierSchema| object] : 
+        params = paramUsername.lower()
+        temp = {}
+        for key, value in self.items.items() : 
+            if value.role == params :
+                temp.update({value.username : value})
+        return temp
+    
     def deleteData(self, username:str) -> None:
         '''
         method buat menghapus data bedasarkan username.

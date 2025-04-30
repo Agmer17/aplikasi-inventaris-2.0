@@ -1,15 +1,20 @@
 from rich.panel import Panel
 from datetime import datetime
 from rich.console import Console
+from rich.prompt import Prompt
 from rich.table import Table
+from module.Manager.UserManager import UserManager
 
 from module.Manager.ItemsManager import ItemsManager
 
-item_manager = ItemsManager()
+# testing
 
-console = Console()
 
-def main_menu():
+
+
+
+def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
+    console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Admin![/bold cyan]\nGunakan dashboard ini untuk mengelola semua data barang, pengguna, dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Admin"))
@@ -30,7 +35,7 @@ def main_menu():
         elif pilihan == "2":
             menu_kategori(item_manager)
         elif pilihan == "3":
-            menu_karyawan()
+            menu_karyawan(listDataUser=userManager)
         elif pilihan == "4":
             menu_supplier()
         elif pilihan == "5":
@@ -171,6 +176,7 @@ def menu_barang(item_manager):
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
+                Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
             else:
                 print("Tidak ada barang.")
 
@@ -308,7 +314,8 @@ def menu_kategori(item_manager):
             console.print("[bold red]Pilihan tidak valid.[/bold red]")
 
         
-def menu_karyawan():
+def menu_karyawan(listDataUser : UserManager):
+    console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Karyawan[/bold cyan]"))
@@ -321,11 +328,35 @@ def menu_karyawan():
 6. Laporan Jumlah Karyawan
 7. Kembali
 """)
-        p = input("Pilih menu: ")
-        if p == "7":
-            break
+        choice = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
+        match choice : 
+            case "1" : 
+                table = Table(title="User Information")
+                table.add_column("Key", style="cyan")
+                table.add_column("Name", style="green")
+                table.add_column("Email", style="blue")
+                table.add_column("Password", style="red")
+                table.add_column("Role", style="magenta")
+
+                # Add rows
+                for user_key, user_info in listDataUser.items.items():
+                    table.add_row(
+                        user_key,
+                        user_info.name,
+                        user_info.email,
+                        user_info.password,
+                        user_info.role
+                    )
+                console.print(table)
+                tempUsername = Prompt.ask("Masukan username yg ingin dirubah : ")
+                
+            case "7" : 
+                break
+            case _ : 
+                break
 
 def menu_supplier():
+    console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Supplier[/bold cyan]"))
@@ -342,6 +373,7 @@ def menu_supplier():
             break
 
 def menu_peminjam():
+    console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Peminjam[/bold cyan]"))
@@ -358,12 +390,14 @@ def menu_peminjam():
             break
 
 def menu_registrasi():
+    console = Console()
     console.clear()
     console.print(Panel.fit("[bold cyan]Registrasi Pengguna[/bold cyan]"))
     console.print("👉 Fungsi ini mengambil dari User.py di folder manager")
     input("Tekan Enter untuk kembali...")
 
 def menu_laporan():
+    console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Laporan[/bold cyan]"))

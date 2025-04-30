@@ -243,8 +243,3 @@ def menu_peminjam_employee():
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 def menu_laporan_employee():
    pass
-
-
-      
-# menu_utama_employee()
-search_barang_employee()
