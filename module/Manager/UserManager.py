@@ -1,6 +1,7 @@
 from module.User import Admin as AdminSchema
 from module.User import Supplier as SupplierSchema
 from module.User import Employee as EmployeeSchema
+from module.User import User as UserSchema
 
 import json
 
@@ -53,6 +54,8 @@ class UserManager:
                 data[username] = EmployeeSchema(username=username, **userData)
             if role == "supplier":
                 data[username] = SupplierSchema(username=username, **userData)
+            if role == "user":
+                data[username] = UserSchema(username=username, **userData)
             
         
         return data
@@ -123,6 +126,10 @@ class UserManager:
                 
             elif role == "supplier" : 
                 newUsers:SupplierSchema = SupplierSchema(**dataUser)
+                self.items.update({dataUser.get("username") : newUsers})
+            
+            elif role == "user" : 
+                newUsers:UserSchema = UserSchema(**dataUser)
                 self.items.update({dataUser.get("username") : newUsers})
             
             else : 

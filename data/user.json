@@ -11,24 +11,6 @@
         "password": "12345",
         "role": "supplier"
     },
-    "hiura_imut": {
-        "name": "hiura mihate",
-        "email": "hiura@gmail.com",
-        "password": "12345",
-        "role": "employee"
-    },
-    "karyawan": {
-        "name": "karyawan",
-        "email": "employee@gmail.com",
-        "password": "12345",
-        "role": "employee"
-    },
-    "astolfo_pink": {
-        "name": "Astolfo",
-        "email": "astolfo@example.com",
-        "password": "password456",
-        "role": "employee"
-    },
     "rimuru_sama": {
         "name": "Rimuru Tempest",
         "email": "rimuru@example.com",
@@ -70,5 +52,23 @@
         "email": "kaila@gmail.com",
         "password": "12345",
         "role": "admin"
+    },
+    "aretta": {
+        "name": "aretta",
+        "email": "aretta@gmail.com",
+        "password": "12345",
+        "role": "admin"
+    },
+    "karyawan": {
+        "name": "karyawan",
+        "email": "employee@gmail.com",
+        "password": "12345",
+        "role": "employee"
+    },
+    "yumna": {
+        "name": "yumna",
+        "email": "yumna@gmail.com",
+        "password": "12345",
+        "role": "user"
     }
 }

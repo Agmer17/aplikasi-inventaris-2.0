@@ -4,7 +4,6 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
 from module.Manager.UserManager import UserManager
-
 from module.Manager.ItemsManager import ItemsManager
 
 # testing
@@ -30,9 +29,9 @@ def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
         elif pilihan == "2":
             menu_karyawan(listDataUser=userManager)
         elif pilihan == "3":
-            menu_supplier()
+            menu_supplier(listDataUser=userManager)
         elif pilihan == "4":
-            menu_peminjam()
+            menu_peminjam(listDataUser=userManager)
         elif pilihan == "5":
             menu_registrasi(userManager)
         elif pilihan == "6":
@@ -308,7 +307,7 @@ def menu_kategori(item_manager):
             console.print("[bold red]Pilihan tidak valid.[/bold red]")
 
         
-def menu_karyawan(listDataUser : UserManager):
+def menu_karyawan(listDataUser: UserManager):
     console = Console()
     while True:
         console.clear()
@@ -317,56 +316,244 @@ def menu_karyawan(listDataUser : UserManager):
 1. Edit Karyawan
 2. Hapus Karyawan
 3. Lihat Laporan Karyawan
-4. Cari Barang
-5. Sorting Barang 
-6. Laporan Jumlah Karyawan
-7. Kembali
+4. Kembali
 """)
         choice = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
-        match choice : 
-            case "1" : 
-                table = Table(title="User Information")
-                table.add_column("Key", style="cyan")
-                table.add_column("Name", style="green")
-                table.add_column("Email", style="blue")
-                table.add_column("Password", style="red")
-                table.add_column("Role", style="magenta")
 
-                # Add rows
-                for user_key, user_info in listDataUser.items.items():
-                    table.add_row(
-                        user_key,
-                        user_info.name,
-                        user_info.email,
-                        user_info.password,
-                        user_info.role
-                    )
-                console.print(table)
-                tempUsername = Prompt.ask("Masukan username yg ingin dirubah : ")
-                
-            case "7" : 
-                break
-            case _ : 
-                break
+        if choice == "1":
+            # Tampilkan semua employee
+            employees = listDataUser.getDataByRole("employee")
+            table = Table(title="Daftar Karyawan (Role: employee)")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Password", style="red")
+            table.add_column("Role", style="magenta")
 
-def menu_supplier():
+            for username, user in employees.items():
+                table.add_row(
+                    username,
+                    user.name,
+                    user.email,
+                    user.password,
+                    user.role
+                )
+
+            console.print(table)
+
+            tempUsername = Prompt.ask("Masukkan username yang ingin diedit: ")
+            user = listDataUser.findUser(tempUsername)
+            if user and user.role == "employee":
+                console.print("[yellow]Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
+
+                new_username = Prompt.ask(f"Username baru [{user.username}]")
+                new_name = Prompt.ask(f"Nama baru [{user.name}]")
+                new_email = Prompt.ask(f"Email baru [{user.email}]")
+                new_password = Prompt.ask(f"Password baru [{user.password}]")
+
+                # Edit satu-satu hanya jika diisi
+                if new_username:
+                    listDataUser.editUser(tempUsername, "username")
+                    user.changeUsername(new_username)
+                if new_name:
+                    listDataUser.editUser(user.username, "nama")
+                    user.changeName(new_name)
+                if new_email:
+                    listDataUser.editUser(user.username, "email")
+                    user.changeEmail(new_email)
+                if new_password:
+                    listDataUser.editUser(user.username, "password")
+                    user.changePassword(new_password)
+
+                console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
+            else:
+                console.print("[red]Username tidak ditemukan atau bukan karyawan![/red]")
+
+            input("Tekan ENTER untuk lanjut...")
+
+        elif choice == "2":
+              # Tampilkan semua employee
+            employees = listDataUser.getDataByRole("employee")
+            table = Table(title="Daftar Karyawan (Role: employee)")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Password", style="red")
+            table.add_column("Role", style="magenta")
+
+            for username, user in employees.items():
+                table.add_row(
+                    username,
+                    user.name,
+                    user.email,
+                    user.password,
+                    user.role
+                )
+
+            console.print(table)
+            
+            tempUsername = Prompt.ask("Masukkan username yang ingin dihapus: ")
+            user = listDataUser.findUser(tempUsername)
+            if user and user.role == "employee":
+                listDataUser.deleteData(tempUsername)
+                console.print("[green]Data karyawan berhasil dihapus.[/green]")
+            else:
+                console.print("[red]Username tidak ditemukan atau bukan karyawan![/red]")
+            input("Tekan ENTER untuk lanjut...")
+
+        elif choice == "3":
+            employees = listDataUser.getDataByRole("employee")
+            table = Table(title="Laporan Data Karyawan")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+
+            for username, user in employees.items():
+                table.add_row(
+                    username,
+                    user.name,
+                    user.email,
+                    user.role
+                )
+
+            console.print(table)
+            input("Tekan ENTER untuk lanjut...")
+
+        elif choice == "4":
+            break
+
+        else:
+            console.print("[red]Pilihan tidak valid![/red]")
+            input("Tekan ENTER untuk lanjut...")
+
+def menu_supplier(listDataUser: UserManager):
     console = Console()
     while True:
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Supplier[/bold cyan]"))
         console.print("""
-1. Edit Supplier
-2. Hapus Supplier
-3. Lihat Daftar Supplier
-4. Cari Data Supplier
-5. Sorting Data Supplier
-6. Kembali
+[bold yellow]1.[/bold yellow] Edit Supplier
+[bold yellow]2.[/bold yellow] Hapus Supplier
+[bold yellow]3.[/bold yellow] Lihat Daftar Supplier
+[bold yellow]4.[/bold yellow] Cari Data Supplier
+[bold yellow]5.[/bold yellow] Sorting Data Supplier
+[bold yellow]6.[/bold yellow] Kembali
 """)
-        p = input("Pilih menu: ")
-        if p == "6":
+
+        p = Prompt.ask("[green]Pilih menu[/green]")
+
+        if p == "1":
+            suppliers = listDataUser.getDataByRole("supplier")
+            table = Table(title="Daftar Supplier")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in suppliers.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username supplier yang ingin diedit")
+            supplier = listDataUser.findUser(username)
+            if supplier and supplier.role == "supplier":
+                console.print("[yellow]Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
+                new_username = Prompt.ask("Username baru", default=username)
+                new_name = Prompt.ask("Nama baru", default=supplier.name)
+                new_email = Prompt.ask("Email baru", default=supplier.email)
+                new_password = Prompt.ask("Password baru", default=supplier.password)
+
+                if new_username != username:
+                    # pindah data
+                    user_data = listDataUser.items.pop(username)
+                    user_data.changeUsername(new_username)
+                    listDataUser.items[new_username] = user_data
+                    username = new_username
+
+                supplier = listDataUser.findUser(username)
+                supplier.changeName(new_name)
+                supplier.changeEmail(new_email)
+                supplier.changePassword(new_password)
+
+                console.print("[green]✅ Data supplier berhasil diubah[/green]")
+            else:
+                console.print("[red]❌ Supplier tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "2":
+            suppliers = listDataUser.getDataByRole("supplier")
+            table = Table(title="Daftar Supplier")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in suppliers.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username supplier yang akan dihapus")
+            user = listDataUser.findUser(username)
+            if user and user.role == "supplier":
+                listDataUser.deleteData(username)
+                console.print("[green]Supplier berhasil dihapus.[/green]")
+            else:
+                console.print("[red]❌ Supplier tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "3":
+            suppliers = listDataUser.getDataByRole("supplier")
+            table = Table(title="Daftar Supplier")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in suppliers.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "4":
+            suppliers = listDataUser.getDataByRole("supplier")
+            table = Table(title="Daftar Supplier")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in suppliers.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username supplier")
+            user = listDataUser.findUser(username)
+            if user and user.role == "supplier":
+                console.print(f"[cyan]Username:[/cyan] {user.username}")
+                console.print(f"[green]Nama:[/green] {user.name}")
+                console.print(f"[blue]Email:[/blue] {user.email}")
+                console.print(f"[magenta]Role:[/magenta] {user.role}")
+            else:
+                console.print("[red]Supplier tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "5":
+            suppliers = listDataUser.getDataByRole("supplier")
+            sorted_data = dict(sorted(suppliers.items()))
+            table = Table(title="Supplier Tersorting")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            for username, user in sorted_data.items():
+                table.add_row(username, user.name, user.email)
+            console.print(table)
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "6":
             break
 
-def menu_peminjam():
+        else:
+            console.print("[red]Pilihan tidak valid![/red]")
+            input("Tekan Enter untuk lanjut...")
+            
+def menu_peminjam(listDataUser: UserManager):
     console = Console()
     while True:
         console.clear()
@@ -374,15 +561,123 @@ def menu_peminjam():
         console.print("""
 1. Edit Peminjam
 2. Hapus Peminjam
-3. Lihat Laporan Peminjam
+3. Lihat Daftar Peminjam
 4. Cari Data Peminjam
 5. Sorting Data Peminjam
 6. Kembali
 """)
-        p = input("Pilih menu: ")
-        if p == "6":
+        p = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
+
+        if p == "1":
+            peminjam = listDataUser.getDataByRole("pembeli")
+            table = Table(title="Daftar Peminjam")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in peminjam.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username peminjam yang ingin diedit")
+            peminjam = listDataUser.findUser(username)
+            if peminjam and peminjam.role == "pembeli":
+                console.print("[yellow]Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
+                new_username = Prompt.ask("Username baru", default=username)
+                new_name = Prompt.ask("Nama baru", default=peminjam.name)
+                new_email = Prompt.ask("Email baru", default=peminjam.email)
+                new_password = Prompt.ask("Password baru", default=peminjam.password)
+
+                if new_username != username:
+                    # Pindah data
+                    user_data = listDataUser.items.pop(username)
+                    user_data.changeUsername(new_username)
+                    listDataUser.items[new_username] = user_data
+                    username = new_username
+
+                peminjam = listDataUser.findUser(username)
+                peminjam.changeName(new_name)
+                peminjam.changeEmail(new_email)
+                peminjam.changePassword(new_password)
+
+                console.print("[green]✅ Data peminjam berhasil diubah[/green]")
+            else:
+                console.print("[red]❌ Peminjam tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "2":
+            peminjam = listDataUser.getDataByRole("pembeli")
+            table = Table(title="Daftar Peminjam")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in peminjam.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username peminjam yang akan dihapus")
+            user = listDataUser.findUser(username)
+            if user and user.role == "pembeli":
+                listDataUser.deleteData(username)
+                console.print("[green]Peminjam berhasil dihapus.[/green]")
+            else:
+                console.print("[red]❌ Peminjam tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "3":
+            peminjam = listDataUser.getDataByRole("pembeli")
+            table = Table(title="Daftar Peminjam")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in peminjam.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "4":
+            peminjam = listDataUser.getDataByRole("pembeli")
+            table = Table(title="Daftar Peminjam")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            table.add_column("Role", style="magenta")
+            for username, user in peminjam.items():
+                table.add_row(username, user.name, user.email, user.role)
+            console.print(table)
+            
+            username = Prompt.ask("Masukkan username peminjam")
+            user = listDataUser.findUser(username)
+            if user and user.role == "pembeli":
+                console.print(f"[cyan]Username:[/cyan] {user.username}")
+                console.print(f"[green]Nama:[/green] {user.name}")
+                console.print(f"[blue]Email:[/blue] {user.email}")
+                console.print(f"[magenta]Role:[/magenta] {user.role}")
+            else:
+                console.print("[red]Peminjam tidak ditemukan![/red]")
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "5":
+            peminjam = listDataUser.getDataByRole("pembeli")
+            sorted_data = dict(sorted(peminjam.items()))
+            table = Table(title="Peminjam Tersorting")
+            table.add_column("Username", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Email", style="blue")
+            for username, user in sorted_data.items():
+                table.add_row(username, user.name, user.email)
+            console.print(table)
+            input("Tekan Enter untuk lanjut...")
+
+        elif p == "6":
             break
 
+        else:
+            console.print("[red]Pilihan tidak valid![/red]")
+            input("Tekan Enter untuk lanjut...")
+        
 def menu_registrasi(userManager: UserManager):
     console = Console()
     console.clear()
@@ -392,7 +687,11 @@ def menu_registrasi(userManager: UserManager):
     username = Prompt.ask("Masukkan username")
     email = Prompt.ask("Masukkan email")
     password = Prompt.ask("Masukkan password")
-    role = Prompt.ask("Masukkan role (admin/employee/supplier)", choices=["admin", "employee", "supplier"])
+    role = Prompt.ask("Masukkan role (admin/employee/supplier/pembeli)", choices=["admin", "employee", "supplier", "pembeli"])
+
+    # ubah pembeli menjadi user
+    if role == "pembeli":
+        role = "user"
 
     data = {
         "name": name,

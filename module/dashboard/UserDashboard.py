@@ -10,8 +10,8 @@ def user_main_menu():
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Pengguna![/bold cyan]\nGunakan dashboard ini untuk mengelola data barang dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Pengguna"))
         console.print("""
 [bold green]1.[/bold green] Lihat Daftar Barang
-[bold green]2.[/bold green] Pinjam Barang
-[bold green]3.[/bold green] Lihat Barang yang Dipinjam
+[bold green]2.[/bold green] Beli Barang
+[bold green]3.[/bold green] Lihat Barang yang dibeli
 [bold green]4.[/bold green] Cari Barang
 [bold green]5.[/bold green] Sorting Barang
 [bold green]6.[/bold green] Keluar App

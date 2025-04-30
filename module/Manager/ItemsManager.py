@@ -13,7 +13,7 @@ class ItemsManager :
     - Load dan simpan data ke file JSON
     - dll
     """
-    def __init__(self):
+    def __init__(self):    
         self.data = {"categories": {}, "items": {}}
         self.load_data()
 
