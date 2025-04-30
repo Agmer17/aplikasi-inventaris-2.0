@@ -1,10 +1,108 @@
 # dashboard_employee.py
 from rich.console import Console
 from rich.panel import Panel
+from rich.table import Table
 from datetime import datetime
 import json
 
+itemsjsonfilepath = '../../data/items.json'
+
+
 console = Console()
+def tambah_barang_employee():
+            # Kuisioner buat dibikin ke JSON
+            name = input("Masukkan nama barang: ")
+            # Default kalau jawaban kosong
+            if not name:
+                name = "Nama Belum Diisi"
+            category = input("Masukkan kategori barang: ")
+            # Default kalau jawaban kosong
+            if not category:
+                category = "-"
+            stock = input("Masukkan jumlah stok barang(dalam angka): ").strip()
+            # Default kalau jawaban kosong
+            if not stock:
+                stock = -1  # Nilai default
+            else:
+                stock = int(stock)
+            price = input("Masukkan harga awal barang(dalam angka): ")
+            # Default kalau jawaban kosong
+            if not price:
+                price = -1  # Nilai default
+            else:
+                price = int(price)
+            sell_price = input("Masukkan harga jual barang(dalam angka): ")
+            if not sell_price:
+                sell_price = -1  # Nilai default
+            else:
+                sell_price = int(sell_price)
+            entry_date = datetime.now().isoformat()
+            description = input("Masukkan deskripsi barang: ")
+            # Default kalau jawaban kosong
+            if not description:
+                description = "-"
+            supplier = input("Masukkan nama supplier: ")
+            # Default kalau jawaban kosong
+            if not supplier:
+                supplier= "-"
+            status = input("Aktif/Tidak Aktif: ")
+            # Default kalau jawaban kosong
+            if not status:
+                status= "Aktif"
+            
+            item_baru = {
+            "name": name,
+            "category": category,
+            "stock": stock,
+            "price": price,
+            "sellPrice": sell_price,
+            "entrydate": entry_date,
+            "desc": description,
+            "supplier": supplier,
+            "status": status
+            } 
+            # Reading from a JSON file
+            with open(itemsjsonfilepath, 'r') as file:
+                data = json.load(file)
+
+            # (append new object)
+                data['items'][name] = item_baru
+
+            # Writing back to the file
+            with open(itemsjsonfilepath, 'w') as file:
+                json.dump(data, file, indent=2)
+
+def lihat_daftar_barang_employee():
+    # Reading from a JSON file
+    with open(itemsjsonfilepath, 'r') as file:
+        data = json.load(file)
+        table = Table(title="Daftar Barang")
+        table.add_column("Nama", style="bold cyan")
+        table.add_column("Kategori")
+        table.add_column("Stok", justify="right")
+        table.add_column("Harga Beli", justify="right")
+        table.add_column("Harga Jual", justify="right")
+        table.add_column("Tanggal Masuk")
+        table.add_column("Deskripsi")
+        table.add_column("Supplier")
+        table.add_column("Status", style="green")
+        for item_name, item in data["items"].items():
+            table.add_row(
+            item.get("name", "-"),
+            item.get("category", "-"),
+            str(item.get("stock", "-")),
+            f"{item.get('price', 0):,}",
+            f"{item.get('sellPrice', 0):,}",
+            item.get("entrydate", "-"),
+            item.get("desc", "-"),
+            item.get("supplier", "-"),
+            item.get("status", "-")
+        )
+            
+
+        console.print(table)
+        input()
+            
 
 def menu_utama_employee():
     while True:
@@ -51,7 +149,7 @@ def menu_barang_employee():
         elif pilihan == "2":
             pass
         elif pilihan == "3":
-            pass
+            lihat_daftar_barang_employee()
         elif pilihan == "4":
             pass
         elif pilihan == "5":
@@ -123,68 +221,6 @@ def menu_peminjam_employee():
 def menu_laporan_employee():
    pass
 
-def tambah_barang_employee():
-            # Kuisioner buat dibikin ke JSON
-            name = input("Masukkan nama barang: ")
-            # Default kalau jawaban kosong
-            if not name:
-                name = "Nama Belum Diisi"
-            category = input("Masukkan kategori barang: ")
-            # Default kalau jawaban kosong
-            if not category:
-                category = "-"
-            stock = input("Masukkan jumlah stok barang(dalam angka): ").strip()
-            # Default kalau jawaban kosong
-            if not stock:
-                stock = -1  # Nilai default
-            else:
-                stock = int(stock)
-            price = input("Masukkan harga awal barang(dalam angka): ")
-            # Default kalau jawaban kosong
-            if not price:
-                price = -1  # Nilai default
-            else:
-                price = int(price)
-            sell_price = input("Masukkan harga jual barang(dalam angka): ")
-            if not sell_price:
-                sell_price = -1  # Nilai default
-            else:
-                sell_price = int(sell_price)
-            entry_date = datetime.now().isoformat()
-            description = input("Masukkan deskripsi barang: ")
-            # Default kalau jawaban kosong
-            if not description:
-                description = "-"
-            supplier = input("Masukkan nama supplier: ")
-            # Default kalau jawaban kosong
-            if not supplier:
-                supplier= "-"
-            status = input("Aktif/Tidak Aktif: ")
-            # Default kalau jawaban kosong
-            if not status:
-                status= "Aktif"
-            
-            item_baru = {
-            "name": name,
-            "category": category,
-            "stock": stock,
-            "price": price,
-            "sellPrice": sell_price,
-            "entrydate": entry_date,
-            "desc": description,
-            "supplier": supplier,
-            "status": status
-            } 
-            # Reading from a JSON file
-            with open('../../data/items.json', 'r') as file:
-                data = json.load(file)
 
-            # (append new object)
-                data['items'][name] = item_baru
-
-            # Writing back to the file
-            with open('../../data/items.json', 'w') as file:
-                json.dump(data, file, indent=2)
-
-
+      
 menu_utama_employee()
