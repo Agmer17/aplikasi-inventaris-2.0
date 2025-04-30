@@ -76,6 +76,7 @@ def lihat_daftar_barang_employee():
     # Reading from a JSON file
     with open(itemsjsonfilepath, 'r') as file:
         data = json.load(file)
+        # membuat tabel 
         table = Table(title="Daftar Barang")
         table.add_column("Nama", style="bold cyan")
         table.add_column("Kategori")
@@ -103,6 +104,28 @@ def lihat_daftar_barang_employee():
         console.print(table)
         input()
             
+def search_barang_employee():
+    found = False
+    input_name = input("Masukkan nama barang yang ingin anda cari: ").lower()
+    input_category = input("Masukkan kategori barang yang ingin anda cari: ").lower()
+    table = Table(title="Hasil Pencarian Barang")
+    table.add_column("Nama", style="cyan", no_wrap=True)
+    table.add_column("Kategori", style="magenta")
+    with open(itemsjsonfilepath, 'r') as file:
+        data = json.load(file)
+        dataitem = data['items']
+    #
+    for key, value in dataitem.items():
+        current_name = key.lower()
+        current_category = value['category'].lower()
+        if(not input_name or current_name.startswith(input_name) and (not input_category or current_category.startswith(input_category))):
+            found = True
+            table.add_row(current_name, current_category)
+    if found:
+        console.print(table)
+    else:
+        console.print("[red]Tidak ada item yang cocok.[/red]")
+
 
 def menu_utama_employee():
     while True:
@@ -151,7 +174,7 @@ def menu_barang_employee():
         elif pilihan == "3":
             lihat_daftar_barang_employee()
         elif pilihan == "4":
-            pass
+            search_barang_employee()
         elif pilihan == "5":
             pass
         elif pilihan == "6":
@@ -223,4 +246,5 @@ def menu_laporan_employee():
 
 
       
-menu_utama_employee()
+# menu_utama_employee()
+search_barang_employee()
