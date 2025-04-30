@@ -9,10 +9,6 @@ from module.Manager.ItemsManager import ItemsManager
 
 # testing
 
-
-
-
-
 def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
     console = Console()
     while True:
@@ -20,37 +16,35 @@ def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Admin![/bold cyan]\nGunakan dashboard ini untuk mengelola semua data barang, pengguna, dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Admin"))
         console.print(""" 
 [bold green]1.[/bold green] Barang 
-[bold green]2.[/bold green] Kategori Barang 
-[bold green]3.[/bold green] Karyawan 
-[bold green]4.[/bold green] Supplier 
-[bold green]5.[/bold green] Peminjam 
-[bold green]6.[/bold green] Tambah Pengguna 
-[bold green]7.[/bold green] Laporan 
-[bold green]8.[/bold green] Keluar App
+[bold green]2.[/bold green] Karyawan 
+[bold green]3.[/bold green] Supplier 
+[bold green]4.[/bold green] Peminjam 
+[bold green]5.[/bold green] Tambah Pengguna 
+[bold green]6.[/bold green] Laporan 
+[bold green]7.[/bold green] Keluar App
 """)
         pilihan = input("Masukkan pilihan (1-8): ")
 
         if pilihan == "1":
-            menu_barang(item_manager)  # Menambahkan item_manager sebagai argumen
+            menu_barang(item_manager)  
         elif pilihan == "2":
-            menu_kategori(item_manager)
-        elif pilihan == "3":
             menu_karyawan(listDataUser=userManager)
-        elif pilihan == "4":
+        elif pilihan == "3":
             menu_supplier()
-        elif pilihan == "5":
+        elif pilihan == "4":
             menu_peminjam()
+        elif pilihan == "5":
+            menu_registrasi(userManager)
         elif pilihan == "6":
-            menu_registrasi()
-        elif pilihan == "7":
             menu_laporan()
-        elif pilihan == "8":
+        elif pilihan == "7":
             console.print("[bold red]Keluar dari aplikasi...[/bold red]")
             break
         else:
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 
 def menu_barang(item_manager):
+    
     console = Console()
     
     while True:
@@ -389,11 +383,31 @@ def menu_peminjam():
         if p == "6":
             break
 
-def menu_registrasi():
+def menu_registrasi(userManager: UserManager):
     console = Console()
     console.clear()
     console.print(Panel.fit("[bold cyan]Registrasi Pengguna[/bold cyan]"))
-    console.print("👉 Fungsi ini mengambil dari User.py di folder manager")
+    
+    name = Prompt.ask("Masukkan nama")
+    username = Prompt.ask("Masukkan username")
+    email = Prompt.ask("Masukkan email")
+    password = Prompt.ask("Masukkan password")
+    role = Prompt.ask("Masukkan role (admin/employee/supplier)", choices=["admin", "employee", "supplier"])
+
+    data = {
+        "name": name,
+        "username": username,
+        "email": email,
+        "password": password,
+        "role": role
+    }
+
+    berhasil = userManager.addData(data)
+    if berhasil:
+        console.print("[green]✅ Pengguna berhasil ditambahkan![/green]")
+    else:
+        console.print("[red]❌ Gagal menambahkan pengguna. Username mungkin sudah digunakan atau role tidak valid.[/red]")
+
     input("Tekan Enter untuk kembali...")
 
 def menu_laporan():
@@ -412,4 +426,6 @@ def menu_laporan():
 
 # Eksekusi utama
 if __name__ == "__main__":
-    main_menu()
+    userManager = UserManager("path/ke/file_user.json")
+    itemManager = ItemsManager("path/ke/barang.json")
+    main_menu(itemManager, userManager)
