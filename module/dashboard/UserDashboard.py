@@ -1,10 +1,15 @@
 # dashboard_employee.py
-from rich.console import Console
 from rich.panel import Panel
+from datetime import datetime
+from rich.console import Console
+from rich.prompt import Prompt
+from rich.table import Table
+from module.Manager.UserManager import UserManager
+from module.Manager.ItemsManager import ItemsManager
 
 console = Console()
 
-def user_main_menu():
+def user_main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
     while True:
         console.clear()
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Pengguna![/bold cyan]\nGunakan dashboard ini untuk mengelola data barang dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Pengguna"))
@@ -19,7 +24,7 @@ def user_main_menu():
         pilihan = input("Masukkan pilihan (1-6): ")
 
         if pilihan == "1":
-            menu_barang_employee()
+            menu_daftar_barang(item_manager)
         elif pilihan == "2":
             menu_pinjam_barang()
         elif pilihan == "3":
@@ -35,8 +40,21 @@ def user_main_menu():
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 
 
-def menu_barang_employee():
-   pass
+def menu_daftar_barang(item_manager):
+    items = item_manager.get_all_items()
+    if items:
+        table = Table(title="Daftar Barang")
+        table.add_column("Nama Barang", style="cyan", justify="center")
+        table.add_column("Kategori", style="magenta")
+        table.add_column("Stok", style="green")
+
+        for item_name, item in items.items():
+            table.add_row(item_name, item['category'], str(item['stock']))
+
+            console.print(table)
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+    else:
+        print("Tidak ada barang.")
 
 def menu_pinjam_barang():
    pass

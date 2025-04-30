@@ -20,7 +20,7 @@ if hasattr(currentUser, 'role'):
     elif role == "supplier":
         supplier_main_menu()
     elif role == "user":
-        user_main_menu()
+        user_main_menu(item_manager=items, userManager=data)
     else:
         print(f"[ERROR] Role '{role}' tidak dikenali.")
 else:
