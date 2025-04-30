@@ -127,42 +127,42 @@ def tambah_barang_employee():
             # Kuisioner buat dibikin ke JSON
             name = input("Masukkan nama barang: ")
             # Default kalau jawaban kosong
-            if name == "":
+            if not name:
                 name = "Nama Belum Diisi"
             category = input("Masukkan kategori barang: ")
             # Default kalau jawaban kosong
-            if category == "":
+            if not category:
                 category = "-"
             stock = input("Masukkan jumlah stok barang(dalam angka): ").strip()
             # Default kalau jawaban kosong
-            if stock == "":
+            if not stock:
                 stock = -1  # Nilai default
             else:
                 stock = int(stock)
             price = input("Masukkan harga awal barang(dalam angka): ")
             # Default kalau jawaban kosong
-            if price == "":
+            if not price:
                 price = -1  # Nilai default
             else:
                 price = int(price)
             sell_price = input("Masukkan harga jual barang(dalam angka): ")
-            if sell_price == "":
+            if not sell_price:
                 sell_price = -1  # Nilai default
             else:
                 sell_price = int(sell_price)
             entry_date = datetime.now().isoformat()
             description = input("Masukkan deskripsi barang: ")
             # Default kalau jawaban kosong
-            if description == "":
+            if not description:
                 description = "-"
             supplier = input("Masukkan nama supplier: ")
             # Default kalau jawaban kosong
-            if supplier == "":
+            if not supplier:
                 supplier= "-"
             status = input("Aktif/Tidak Aktif: ")
             # Default kalau jawaban kosong
-            if status == "":
-                supplier= "Aktif"
+            if not status:
+                status= "Aktif"
             
             item_baru = {
             "name": name,
