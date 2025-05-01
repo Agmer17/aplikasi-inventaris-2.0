@@ -15,6 +15,28 @@
             "desc": "televisi",
             "supplier": "PT Indo",
             "status": "aktif"
+        },
+        "laptop asus": {
+            "name": "laptop asus",
+            "category": "elektronik",
+            "stock": 100,
+            "price": 5000000,
+            "sellPrice": 5500000,
+            "entrydate": "2025-05-01T11:09:11.986963",
+            "desc": "laptop asus keluaran terbaru",
+            "supplier": "gitsune_san",
+            "status": "aktif"
+        },
+        "iphone 20": {
+            "name": "iphone 20",
+            "category": "elektronik",
+            "stock": 100,
+            "price": 100000,
+            "sellPrice": 1200000,
+            "entrydate": "2025-05-01T11:33:02.528304",
+            "desc": "iphone keluaran 2030",
+            "supplier": "dudung",
+            "status": "aktif"
         }
     }
 }

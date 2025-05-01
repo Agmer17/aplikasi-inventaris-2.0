@@ -76,5 +76,17 @@
         "email": "test@gmail.com",
         "password": "12345",
         "role": "admin"
+    },
+    "testing": {
+        "name": "test",
+        "email": "testing@gmail.com",
+        "password": "12345",
+        "role": "user"
+    },
+    "hiuraAja": {
+        "name": "hiura",
+        "email": "hiura@gmail.com",
+        "password": "123455",
+        "role": "employee"
     }
 }

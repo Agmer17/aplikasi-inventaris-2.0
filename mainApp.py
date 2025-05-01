@@ -7,8 +7,12 @@ from module.dashboard.EmployeeDashboard import menu_utama_employee
 from module.dashboard.SupplierDashboard import supplier_main_menu
 from module.dashboard.UserDashboard import user_main_menu
 
+# testing
+from module.dashboard.Util import *
+
 data = UserManager("data/user.json")
 items = ItemsManager()
+# printTable("data employee", data, "employee")
 currentUser = Autentikasi.login_screen(data)
 
 if hasattr(currentUser, 'role'):

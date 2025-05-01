@@ -41,7 +41,6 @@ class ItemsManager :
     # CRUD untuk Categories
     def get_all_categories(self):
         categories = self.data.get("categories", {})
-        print("Categories:", categories)
         return categories
 
     def add_category(self, category_name):
