@@ -18,6 +18,29 @@ def userTable(title: str, data: UserManager, role: str) -> Table:
     return table
 
 
+def itemTable(title:str, itemData:ItemsManager, type:str)  -> Table :
+    
+    if type == "items" : 
+        items = itemData.get_all_items()
+        table = Table(title=title)
+        table.add_column("Nama Barang", style="cyan", justify="center")
+        table.add_column("Kategori", style="magenta")
+        table.add_column("Stok", style="green")
+
+        for item_name, item in items.items():
+            table.add_row(item_name, item['category'], str(item['stock']))
+        return table
+
+    elif type == "categories" : 
+        # catgory table
+        categoryTable = Table(title="Daftar Kategori")
+        categoryTable.add_column("ID", style="cyan", justify="center")
+        categoryTable.add_column("Nama Kategori", style="green")
+        for category_id, category_name in itemData.get_all_categories().items():
+            categoryTable.add_row(str(category_id), category_name)
+            # -----------------------
+        return categoryTable
+
 def printTable(title: str, data: ItemsManager | UserManager, role: str | None) -> None:
     console = Console()
     
@@ -30,7 +53,11 @@ def printTable(title: str, data: ItemsManager | UserManager, role: str | None) -
         table = userTable(title, data, role)
         console.print(table)  # Cetak tabel
     else:
-        # Tambahkan logika untuk ItemsManager (jika ada)
+        
+        if role not in ["categories", "items"] :
+            raise ValueError("Input role gak valid! harap masukan items/category")
+        items = itemTable(title, data, role)
+        console.print(items)
         pass
 
 # peminjam = listDataUser.getDataByRole("pembeli")

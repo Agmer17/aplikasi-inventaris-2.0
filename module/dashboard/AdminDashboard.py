@@ -64,34 +64,11 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
         choice = input("Pilih opsi: ")
 
         if choice == '1':
-            # catgory table
-            categoryTable = Table(title="Daftar Kategori")
-            categoryTable.add_column("ID", style="cyan", justify="center")
-            categoryTable.add_column("Nama Kategori", style="green")
-            for category_id, category_name in item_manager.get_all_categories().items():
-                categoryTable.add_row(str(category_id), category_name)
-            # -----------------------
-            
-            
-            # supplier table 
-            supplierData = listDataUser.getDataByRole("supplier")
-            supplierTable = Table(title="Daftar supplier")
-            supplierTable.add_column("Username", style="cyan")
-            supplierTable.add_column("Name", style="green")
-
-            for username, user in supplierData.items():
-                supplierTable.add_row(
-                    username,
-                    user.name,
-                )
-
-            # ---------------
-            
             name = input("Masukkan nama barang: ")
             categories = item_manager.get_all_categories()
             
             # Menampilkan tabel
-            console.print(categoryTable)
+            Util.printTable("daftar items", item_manager, "categories")
             
             
             category_id = input("Masukkan ID kategori: ")
@@ -102,7 +79,7 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             sell_price = int(input("Masukkan harga jual: "))
             entrydate = datetime.now().isoformat()
             desc = input("Masukkan deskripsi barang: ")
-            console.print(supplierTable)
+            Util.printTable("daftar supplier", listDataUser, "supplier")
             supplier = input("Masukkan supplier: ")
             status = input("Masukkan status (aktif/non-aktif): ")
 
@@ -185,20 +162,8 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                 print("Tidak ada barang untuk dihapus.")
 
         elif choice == '4':
-            items = item_manager.get_all_items()
-            if items:
-                table = Table(title="Daftar Barang")
-                table.add_column("Nama Barang", style="cyan", justify="center")
-                table.add_column("Kategori", style="magenta")
-                table.add_column("Stok", style="green")
-
-                for item_name, item in items.items():
-                    table.add_row(item_name, item['category'], str(item['stock']))
-
-                console.print(table)
-                Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
-            else:
-                print("Tidak ada barang.")
+            Util.printTable("daftar items", item_manager, "items")
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
         elif choice == '5':
             search_term = input("Masukkan nama barang yang ingin dicari: ")
@@ -213,6 +178,7 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
+                Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
             else:
                 print("Barang tidak ditemukan.") 
 
@@ -272,61 +238,33 @@ def menu_kategori(item_manager):
         choice = input("Pilih opsi: ")
 
         if choice == '1':
-            categories = item_manager.get_all_categories()
-            if categories:
-                table = Table(title="Daftar Kategori Barang untuk Edit")
-                table.add_column("ID Kategori", style="cyan", justify="center")
-                table.add_column("Nama Kategori", style="magenta")
-
-                for category_id, category_name in categories.items():
-                    table.add_row(category_id, category_name)
-
-                console.print(table)
-            else:
-                console.print("[bold red]Tidak ada kategori.[/bold red]")
+            Util.printTable("daftar items", item_manager, "categories")
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
         elif choice == '2':
             category_name = input("Masukkan nama kategori baru: ")
             item_manager.add_category(category_name)
             console.print("[bold green]Kategori berhasil ditambahkan.[/bold green]")
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
         elif choice == '3':
-            categories = item_manager.get_all_categories()
-            if categories:
-                table = Table(title="Daftar Kategori Barang untuk Edit")
-                table.add_column("ID Kategori", style="cyan", justify="center")
-                table.add_column("Nama Kategori", style="magenta")
+            Util.printTable("daftar items", item_manager, "categories")
 
-                for category_id, category_name in categories.items():
-                    table.add_row(category_id, category_name)
+            category_id = input("Masukkan ID kategori yang ingin diedit: ")
+            category_name = input("Masukkan nama kategori baru: ")
+            item_manager.edit_category(category_id, category_name)
+            console.print("[bold yellow]Kategori berhasil diperbarui.[/bold yellow]")
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
-                console.print(table)
-
-                category_id = input("Masukkan ID kategori yang ingin diedit: ")
-                category_name = input("Masukkan nama kategori baru: ")
-                item_manager.edit_category(category_id, category_name)
-                console.print("[bold yellow]Kategori berhasil diperbarui.[/bold yellow]")
-            else:
-                console.print("[bold red]Tidak ada kategori yang bisa diedit.[/bold red]")
 
         elif choice == '4':
-            categories = item_manager.get_all_categories()
-            if categories:
-                table = Table(title="Daftar Kategori Barang untuk Hapus")
-                table.add_column("ID Kategori", style="cyan", justify="center")
-                table.add_column("Nama Kategori", style="magenta")
+            Util.printTable("daftar items", item_manager, "categories")
 
-                for category_id, category_name in categories.items():
-                    table.add_row(category_id, category_name)
-
-                console.print(table)
-
-                category_id = input("Masukkan ID kategori yang ingin dihapus: ")
-                item_manager.delete_category(category_id)
-                console.print("[bold red]Kategori berhasil dihapus.[/bold red]")
-            else:
-                console.print("[bold red]Tidak ada kategori yang bisa dihapus.[/bold red]")
-
+            category_id = input("Masukkan ID kategori yang ingin dihapus: ")
+            item_manager.delete_category(category_id)
+            console.print("[bold red]Kategori berhasil dihapus.[/bold red]")
+            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+            
         elif choice == '5':
             break
 

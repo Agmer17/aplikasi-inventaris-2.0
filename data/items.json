@@ -2,7 +2,8 @@
     "categories": {
         "1": "elektronik",
         "2": "alat musik",
-        "3": "olahraga"
+        "3": "olahraga",
+        "4": "pakaian"
     },
     "items": {
         "Televisi": {
@@ -35,6 +36,17 @@
             "sellPrice": 1200000,
             "entrydate": "2025-05-01T11:33:02.528304",
             "desc": "iphone keluaran 2030",
+            "supplier": "dudung",
+            "status": "aktif"
+        },
+        "mouse ryzen": {
+            "name": "mouse ryzen",
+            "category": "elektronik",
+            "stock": 100,
+            "price": 340000,
+            "sellPrice": 345000,
+            "entrydate": "2025-05-01T14:38:16.399818",
+            "desc": "mouse enak buat gaming",
             "supplier": "dudung",
             "status": "aktif"
         }
