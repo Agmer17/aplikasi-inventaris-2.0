@@ -430,7 +430,3 @@ def menu_supplierdanPeminjam_employee(angka):
 
 def menu_laporan_employee():
    pass
-
-
-
-menu_utama_employee()

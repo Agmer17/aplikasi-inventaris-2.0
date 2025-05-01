@@ -34,7 +34,6 @@ class Person :
         
         if isNotSameData: 
             setattr(self, attributeName, newValue)
-            print(f"{attributeName} berhasil diubah!")
             return True
         
         print(f"{attributeName} tidak boleh sama!")

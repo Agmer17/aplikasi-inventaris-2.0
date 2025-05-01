@@ -77,15 +77,11 @@ class UserManager:
         listUserDummy = {}
         
         for data in self.items : 
-            print(data)
             listUserDummy.update({data : self.findUser(data).getFullData()})
-            print(self.findUser(data))
-            print("ini lagi iterasi")
         
         try : 
             with open(self.path, mode="w") as files :
                 json.dump(listUserDummy, files, indent=4)
-                print("operasi berhasil dilakukan")
         except Exception as e :
             print(e)
     
@@ -168,41 +164,36 @@ class UserManager:
         except Exception as e:
             print(f"Data username tidak ditemukan : {e}")
     
-    def editUser(self, username: str, keyToChange: str):
+    def editUser(self, username: str, keyToChange: str, newValue:str):
         userToEdit = self.findUser(username)
-
         if userToEdit is None:
-            print("Username tidak ada!")
-            print("Data tidak dirubah!")
+            print("username tidak ditemukan!")
             return
 
         keyToChange = keyToChange.lower()
-        value = input(f"Masukan {keyToChange} yang baru: ")
-
-        if keyToChange == "username":
-            # Simpan referensi dulu
-            user_data = self.items.pop(username)
-            user_data.changeUsername(value)
-            self.items[value] = user_data
-            print("Username berhasil diubah!")
-
-        elif keyToChange == "nama":
-            userToEdit.changeName(value)
-            print("Nama berhasil diubah!")
-
-        elif keyToChange == "email":
-            userToEdit.changeEmail(value)
-            print("Email berhasil diubah!")
-
-        elif keyToChange == "password":
-            userToEdit.changePassword(value)
-            print("Password berhasil diubah!")
-
-        else:
-            print("Key nya tidak valid!")
+        if not newValue:
+            print("Nilai baru tidak valid!")
             return
 
-        # Simpan perubahan ke file JSON
+        # gara gara username tuh key nya, jadi gabisa langsung dirubah gitu
+        if keyToChange == "username":
+            user_data = self.items.pop(username)
+            user_data.changeUsername(newValue)
+            self.items[newValue] = user_data
+            print("Username berhasil diubah!")
+        else:
+            actions = {
+                "nama": (userToEdit.changeName, "Nama berhasil diubah!"),
+                "email": (userToEdit.changeEmail, "Email berhasil diubah!"),
+                "password": (userToEdit.changePassword, "Password berhasil diubah!")
+            }
+            
+            if keyToChange in actions:
+                action_func, success_msg = actions[keyToChange]
+                action_func(newValue)
+            else:
+                print("Key nya tidak valid!")
+                return
         self.changeData()
         
     def getAllData(self) -> dict[str:object] : 
@@ -214,5 +205,3 @@ class UserManager:
         return temp
 
 
-
-# from .Auth_schema import Person

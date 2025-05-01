@@ -343,27 +343,21 @@ def menu_karyawan(listDataUser: UserManager):
 
             tempUsername = Prompt.ask("Masukkan username yang ingin diedit: ")
             user = listDataUser.findUser(tempUsername)
+
             if user and user.role == "employee":
                 console.print("[yellow]Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
 
-                new_username = Prompt.ask(f"Username baru [{user.username}]")
-                new_name = Prompt.ask(f"Nama baru [{user.name}]")
-                new_email = Prompt.ask(f"Email baru [{user.email}]")
-                new_password = Prompt.ask(f"Password baru [{user.password}]")
+                fields = {
+                    "username": f"Username baru [{user.username}]",
+                    "nama": f"Nama baru [{user.name}]",
+                    "email": f"Email baru [{user.email}]",
+                    "password": f"Password baru [{user.password}]"
+                }
 
-                # Edit satu-satu hanya jika diisi
-                if new_username:
-                    listDataUser.editUser(tempUsername, "username")
-                    user.changeUsername(new_username)
-                if new_name:
-                    listDataUser.editUser(user.username, "nama")
-                    user.changeName(new_name)
-                if new_email:
-                    listDataUser.editUser(user.username, "email")
-                    user.changeEmail(new_email)
-                if new_password:
-                    listDataUser.editUser(user.username, "password")
-                    user.changePassword(new_password)
+                for key, prompt_text in fields.items():
+                    new_value = Prompt.ask(prompt_text)
+                    if new_value:
+                        listDataUser.editUser(tempUsername, key, new_value)
 
                 console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
             else:
@@ -372,7 +366,7 @@ def menu_karyawan(listDataUser: UserManager):
             input("Tekan ENTER untuk lanjut...")
 
         elif choice == "2":
-              # Tampilkan semua employee
+            # Tampilkan semua employee
             employees = listDataUser.getDataByRole("employee")
             table = Table(title="Daftar Karyawan (Role: employee)")
             table.add_column("Username", style="cyan")

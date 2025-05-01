@@ -59,16 +59,22 @@
         "password": "12345",
         "role": "admin"
     },
-    "karyawan": {
-        "name": "karyawan",
-        "email": "employee@gmail.com",
-        "password": "12345",
-        "role": "employee"
-    },
     "yumna": {
         "name": "yumna",
         "email": "yumna@gmail.com",
         "password": "12345",
         "role": "user"
+    },
+    "programmer": {
+        "name": "programmer1",
+        "email": "employee@gmail.com",
+        "password": "12345",
+        "role": "employee"
+    },
+    "test1": {
+        "name": "testing",
+        "email": "test@gmail.com",
+        "password": "12345",
+        "role": "admin"
     }
 }
