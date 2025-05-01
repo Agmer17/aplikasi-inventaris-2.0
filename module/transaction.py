@@ -1,11 +1,12 @@
-import datetime
+from datetime import datetime
+import uuid
 
 """
 Bentuk data json dari transaksi : 
 
 [
   {
-    "id": "TRX001",
+    "id": "uuid",
     "itemName": "Televisi",
     "type": "penjualan",
     "quantity": 2,
@@ -16,7 +17,7 @@ Bentuk data json dari transaksi :
     "notes": "Pembayaran tunai"
   },
   {
-    "id": "TRX002",
+    "id": "uuid",
     "itemName": "Kipas Angin",
     "type": "pembelian",
     "quantity": 5,
@@ -32,17 +33,20 @@ Bentuk data json dari transaksi :
 class Transaction:
     def __init__(
         self,
-        id: str,
         itemName: str,
         type: str,
         quantity: int,
         supplier: str,
         pricePerItem: float,
+        id :str |None = None,
         date: str|None = None,
         customer: str|None = None,
         notes: str|None = None
     ):
-        self.id: str = id  # ID unik transaksi
+        if not id : 
+          self.id: str = str(uuid.uuid4()) 
+        else : 
+          self.id = id
         self.itemName: str = itemName  # Nama barang dalam transaksi
         self.type: str = type  # Jenis transaksi ("keluar" atau "masuk")
         self.quantity: int = quantity  # Jumlah barang dalam transaksi
@@ -52,3 +56,7 @@ class Transaction:
         self.customer: str|None = customer if type == "keluar" else None  # Isi jika "keluar"
         self.supplier: str = supplier
         self.notes: str|None = notes  # Catatan transaksi
+        
+    def getAllData(self) -> dict[str:str]: 
+      return self.__dict__
+

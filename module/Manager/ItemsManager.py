@@ -1,6 +1,8 @@
 import json
 import os
 from datetime import datetime
+from module.transaction import Transaction
+from module.Manager.TransactionManager import TransactionManager
 class ItemsManager : 
     """
     Mengelola data item dalam file JSON.
@@ -85,3 +87,13 @@ class ItemsManager :
     def sort_items(self, sort_by):
         sorted_items = sorted(self.data["items"].items(), key=lambda x: x[1][sort_by])
         return dict(sorted_items)
+
+    def log_stock_change(self, item_name, old_stock, new_stock): 
+        transaction = {
+        "itemName": item_name,
+        "type": "stock update",
+        "oldStock": old_stock,
+        "newStock": new_stock,
+        "change": new_stock - old_stock,
+        "timestamp": datetime.now().isoformat()
+        }

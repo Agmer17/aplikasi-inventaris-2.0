@@ -41,12 +41,6 @@
         "password": "wakuwaku",
         "role": "employee"
     },
-    "gitsune_san": {
-        "name": "Gitsune",
-        "email": "gitsune@example.com",
-        "password": "kitsunepass",
-        "role": "supplier"
-    },
     "kaila": {
         "name": "kaila",
         "email": "kaila@gmail.com",
@@ -88,5 +82,11 @@
         "email": "hiura@gmail.com",
         "password": "123455",
         "role": "employee"
+    },
+    "gitsune": {
+        "name": "Gitsune",
+        "email": "gitsune@example.com",
+        "password": "kitsunepass",
+        "role": "supplier"
     }
 }

@@ -9,7 +9,7 @@
         "Televisi": {
             "name": "Televisi",
             "category": "elektronik",
-            "stock": 6,
+            "stock": 8,
             "price": 2000000,
             "sellPrice": 3000000,
             "entrydate": "2025-04-29T21:00:35.190673",

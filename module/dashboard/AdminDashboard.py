@@ -99,48 +99,30 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             print("Barang berhasil ditambahkan.")
 
         elif choice == '2':
-            items = item_manager.get_all_items()
-            if items:
-                table = Table(title="Daftar Barang untuk Edit")
-                table.add_column("Nama Barang", style="cyan", justify="center")
-                table.add_column("Kategori", style="magenta")
-                table.add_column("Stok", style="green")
+            Util.printTable("daftar item", item_manager, "items")
+            item_name = Prompt.ask("Masukkan nama barang yang ingin diedit: ")
+            item = item_manager.get_item(item_name)
+            if item:
+                    # Ambil input untuk setiap field
+                updated_item = {
+                    "name": item['name'],
+                    "category":Util.get_input_with_default("Kategori", item['category']),
+                    "stock":Util.get_input_with_default("Stok", item['stock'], int),
+                    "price":Util.get_input_with_default("Harga", item['price'], int),
+                    "sellPrice":Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
+                    "entrydate": item['entrydate'],
+                    "desc":Util.get_input_with_default("Deskripsi", item['desc']),
+                    "supplier":Util.get_input_with_default("Supplier", item['supplier']),
+                    "status":Util.get_input_with_default("Status", item['status'])
+                }
                 
-                for item_name, item in items.items():
-                    table.add_row(item_name, item['category'], str(item['stock']))
-
-                console.print(table)
-
-                item_name = input("Masukkan nama barang yang ingin diedit: ")
-                item = item_manager.get_item(item_name)
-                if item:
-                    print(f"Nama: {item['name']}, Kategori: {item['category']}, Stok: {item['stock']}")
-                    category = input(f"Kategori ({item['category']}): ") or item['category']
-                    stock = int(input(f"Stok ({item['stock']}): ") or item['stock'])
-                    price = int(input(f"Harga ({item['price']}): ") or item['price'])
-                    sell_price = int(input(f"Harga Jual ({item['sellPrice']}): ") or item['sellPrice'])
-                    desc = input(f"Deskripsi ({item['desc']}): ") or item['desc']
-                    supplier = input(f"Supplier ({item['supplier']}): ") or item['supplier']
-                    status = input(f"Status ({item['status']}): ") or item['status']
-
-                    updated_item = {
-                        "name": item['name'],
-                        "category": category,
-                        "stock": stock,
-                        "price": price,
-                        "sellPrice": sell_price,
-                        "entrydate": item['entrydate'],
-                        "desc": desc,
-                        "supplier": supplier,
-                        "status": status
-                    }
-
-                    item_manager.update_item(item_name, updated_item)
-                    print("Barang berhasil diperbarui.")
-                else:
-                    print("Barang tidak ditemukan.")
+                # Update item dan tampilkan pesan sukses
+                item_manager.update_item(item_name, updated_item)
+                console.print("[bold green]Barang berhasil diperbarui.[/bold green]")
             else:
-                print("Tidak ada barang untuk diedit.")
+                console.print("[bold red]Barang tidak ditemukan.[/bold red]")
+                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
+
 
         elif choice == '3':
             items = item_manager.get_all_items()
@@ -196,6 +178,7 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                 sorted_items = item_manager.sort_items('stock')
             else:
                 print("Pilihan tidak valid.")
+                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
                 continue
 
             if sorted_items:
@@ -208,8 +191,11 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
+                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
             else:
-                print("Tidak ada barang.")
+                console.print("[bold red]Tidak ada barang.[/bold red]")
+                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
+                
 
         elif choice == '7':
             menu_kategori(item_manager)
@@ -358,25 +344,20 @@ def menu_supplier(listDataUser: UserManager):
             username = Prompt.ask("Masukkan username supplier yang ingin diedit")
             supplier = listDataUser.findUser(username)
             if supplier and supplier.role == "supplier":
-                console.print("[yellow]Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
-                new_username = Prompt.ask("Username baru", default=username)
-                new_name = Prompt.ask("Nama baru", default=supplier.name)
-                new_email = Prompt.ask("Email baru", default=supplier.email)
-                new_password = Prompt.ask("Password baru", default=supplier.password)
+                console.print("[yellow]Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
 
-                if new_username != username:
-                    # pindah data
-                    user_data = listDataUser.items.pop(username)
-                    user_data.changeUsername(new_username)
-                    listDataUser.items[new_username] = user_data
-                    username = new_username
+                fields = {
+                    "username": f"Username baru [{supplier.username}]",
+                    "nama": f"Nama baru [{supplier.name}]",
+                    "email": f"Email baru [{supplier.email}]",
+                    "password": f"Password baru [{supplier.password}]"
+                }
 
-                supplier = listDataUser.findUser(username)
-                supplier.changeName(new_name)
-                supplier.changeEmail(new_email)
-                supplier.changePassword(new_password)
-
-                console.print("[green]✅ Data supplier berhasil diubah[/green]")
+                for key, prompt_text in fields.items():
+                    new_value = Prompt.ask(prompt_text)
+                    if new_value:
+                        listDataUser.editUser(username, key, new_value)
+                console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
             else:
                 console.print("[red]❌ Supplier tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")

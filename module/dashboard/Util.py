@@ -60,61 +60,8 @@ def printTable(title: str, data: ItemsManager | UserManager, role: str | None) -
         console.print(items)
         pass
 
-# peminjam = listDataUser.getDataByRole("pembeli")
-#             table = Table(title="Daftar Peminjam")
-#             table.add_column("Username", style="cyan")
-#             table.add_column("Name", style="green")
-#             table.add_column("Email", style="blue")
-#             table.add_column("Role", style="magenta")
-#             for username, user in peminjam.items():
-#                 table.add_row(username, user.name, user.email, user.role)
-#             console.print(table)
-
-# suppliers = listDataUser.getDataByRole("supplier")
-#             table = Table(title="Daftar Supplier")
-#             table.add_column("Username", style="cyan")
-#             table.add_column("Name", style="green")
-#             table.add_column("Email", style="blue")
-#             table.add_column("Role", style="magenta")
-#             for username, user in suppliers.items():
-#                 table.add_row(username, user.name, user.email, user.role)
-#             console.print(table)
-
-# employees = listDataUser.getDataByRole("employee")
-#             table = Table(title="Daftar Karyawan (Role: employee)")
-#             table.add_column("Username", style="cyan")
-#             table.add_column("Name", style="green")
-#             table.add_column("Email", style="blue")
-#             table.add_column("Password", style="red")
-#             table.add_column("Role", style="magenta")
-
-#             for username, user in employees.items():
-#                 table.add_row(
-#                     username,
-#                     user.name,
-#                     user.email,
-#                     user.password,
-#                     user.role
-#                 )
-
-# employees = listDataUser.getDataByRole("employee")
-#             table = Table(title="Daftar Karyawan (Role: employee)")
-#             table.add_column("Username", style="cyan")
-#             table.add_column("Name", style="green")
-#             table.add_column("Email", style="blue")
-#             table.add_column("Password", style="red")
-#             table.add_column("Role", style="magenta")
-
-#             for username, user in employees.items():
-#                 table.add_row(
-#                     username,
-#                     user.name,
-#                     user.email,
-#                     user.password,
-#                     user.role
-#                 )
-
-# if __name__ == "__main__":
-#     userManager = UserManager("path/ke/file_user.json")
-#     itemManager = ItemsManager("path/ke/barang.json")
-#     Console.print(printTable("data testing", userManager, "employee"))
+def get_input_with_default(prompt, default_value, convert_type=None):
+        user_input = input(f"{prompt} ({default_value}): ") or default_value
+        if convert_type and user_input != default_value:
+            return convert_type(user_input)
+        return user_input if convert_type is None else convert_type(user_input)
