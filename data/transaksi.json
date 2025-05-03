@@ -1,0 +1,38 @@
+[
+    {
+        "id": "808e927a-de34-46b1-8068-54c87bd91726",
+        "itemName": "laptop asus",
+        "type": "masuk",
+        "quantity": 10,
+        "pricePerItem": 5000000,
+        "totalPrice": 50000000,
+        "date": "2025-05-03T14:25:06.007971",
+        "customer": null,
+        "supplier": "dudung",
+        "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "dc5a7ad5-f5fa-4462-9bd7-8add30bad6b5",
+        "itemName": "mouse ryzen",
+        "type": "masuk",
+        "quantity": 100,
+        "pricePerItem": 70000,
+        "totalPrice": 7000000,
+        "date": "2025-05-03T14:26:45.938929",
+        "customer": null,
+        "supplier": "gitsune",
+        "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "2daf620b-b713-47f1-9151-e4162c749f9e",
+        "itemName": "hp infinix",
+        "type": "masuk",
+        "quantity": 100,
+        "pricePerItem": 1500000,
+        "totalPrice": 150000000,
+        "date": "2025-05-03T14:27:30.902205",
+        "customer": null,
+        "supplier": "dudung",
+        "notes": "Penambahan barang baru"
+    }
+]

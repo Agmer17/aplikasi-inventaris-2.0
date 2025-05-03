@@ -2,6 +2,8 @@ from module.Manager.ItemsManager import ItemsManager
 from module.Manager.UserManager import UserManager
 from rich.table import Table
 from rich.console import Console
+from module.transaction import Transaction
+
 
 def userTable(title: str, data: UserManager, role: str) -> Table:
     temp: dict = data.getDataByRole(role)
@@ -65,3 +67,76 @@ def get_input_with_default(prompt, default_value, convert_type=None):
         if convert_type and user_input != default_value:
             return convert_type(user_input)
         return user_input if convert_type is None else convert_type(user_input)
+
+def createTransaction(
+    item_name: str,
+    stok_awal: int,
+    stok_baru: int,
+    supplier: str,
+    price_per_item: float,
+    transaction_manager,
+    reason: str = "Perubahan stok"
+):
+    console = Console()
+    """
+    Fungsi generik untuk membuat dan mencatat transaksi stok otomatis.
+    
+    Parameters:
+    - item_name (str): Nama item.
+    - stok_awal (int): Stok sebelum perubahan.
+    - stok_baru (int): Stok setelah perubahan.
+    - supplier (str): Nama supplier.
+    - price_per_item (float): Harga per item.
+    - transaction_manager: Objek manajer transaksi.
+    - reason (str): Alasan perubahan stok, digunakan sebagai catatan transaksi.
+    """
+    selisih = stok_baru - stok_awal
+
+    transaksi_data = {
+        "itemName": item_name,
+        "type": "masuk" if selisih > 0 else "keluar",
+        "quantity": abs(selisih),
+        "supplier": supplier,
+        "pricePerItem": price_per_item,
+        "customer": None,
+        "notes": reason
+    }
+
+    data_transaksi = Transaction(**transaksi_data)
+    transaction_manager.add_transaction(data_transaksi)
+
+    console.print(f"[bold blue]Transaksi otomatis ({transaksi_data['type']}) tercatat sebanyak {transaksi_data['quantity']} unit.[/bold blue]")
+
+
+def display_transactions(transactionManager):
+    table = Table(title="Daftar Transaksi Barang", show_lines=True)
+    console = Console()
+    
+    transactions = transactionManager.get_all_transactions()
+
+    table.add_column("ID", style="cyan", no_wrap=True, max_width=10)
+    table.add_column("Barang", style="bold", max_width=15)
+    table.add_column("Tipe", style="green", width=6)
+    table.add_column("Qty", justify="right", width=5)
+    table.add_column("Harga", justify="right", width=12)
+    table.add_column("Total", justify="right", width=12)
+    table.add_column("Tgl", style="dim", width=16)
+    table.add_column("Sup", style="magenta", max_width=10)
+    table.add_column("Cus", style="magenta", max_width=10)
+    table.add_column("Catatan", style="yellow", max_width=20)
+
+    for trx in transactions:
+        table.add_row(
+            trx["id"],
+            trx["itemName"],
+            trx["type"],
+            str(trx["quantity"]),
+            f"Rp {trx['pricePerItem']:,.0f}",
+            f"Rp {trx['totalPrice']:,.0f}",
+            trx["date"],
+            trx.get("supplier", "-") or "-",
+            trx.get("customer", "-") or "-",
+            trx.get("notes", "-") or "-"
+        )
+
+    console.print(table)

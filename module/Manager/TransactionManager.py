@@ -27,6 +27,7 @@ class TransactionManager:
         """
         self.transactions.append(transaction)
         print(f"Transaksi {transaction.id} berhasil ditambahkan")
+        self.save_transactions()
     
     def get_all_transactions(self) -> list[Transaction]:
         """
@@ -35,7 +36,10 @@ class TransactionManager:
         Returns:
             list[Transaction]: Daftar semua transaksi
         """
-        return self.transactions
+        temp = []
+        for data in self.transactions :
+            temp.append(data.getAllData())
+        return temp
     
     def save_transactions(self) -> None:
         """
@@ -77,8 +81,6 @@ class TransactionManager:
         try:
             if not os.path.exists(filename):
                 print(f"File {filename} tidak ditemukan. Membuat file baru.")
-                # Buat direktori jika belum ada
-                os.makedirs(os.path.dirname(filename), exist_ok=True)
                 # Buat file kosong dengan array JSON kosong
                 with open(filename, 'w', encoding='utf-8') as file:
                     json.dump([], file)

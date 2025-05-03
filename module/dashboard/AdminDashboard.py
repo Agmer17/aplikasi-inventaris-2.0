@@ -6,8 +6,10 @@ from rich.table import Table
 from module.Manager.UserManager import UserManager
 from module.Manager.ItemsManager import ItemsManager
 import module.dashboard.Util as Util
+from module.Manager.TransactionManager import TransactionManager
 
 # testing
+transaction = TransactionManager();
 
 def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
     console = Console()
@@ -96,29 +98,43 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             }
 
             item_manager.add_item(name, item_data)
+            Util.createTransaction(name, 0, stock, supplier, price, transaction, "Penambahan barang baru")
             print("Barang berhasil ditambahkan.")
 
         elif choice == '2':
             Util.printTable("daftar item", item_manager, "items")
             item_name = Prompt.ask("Masukkan nama barang yang ingin diedit: ")
             item = item_manager.get_item(item_name)
+
             if item:
-                    # Ambil input untuk setiap field
+                stok_awal = item['stock']
+
+                # Langsung update item sekaligus ambil nilai baru
                 updated_item = {
                     "name": item['name'],
-                    "category":Util.get_input_with_default("Kategori", item['category']),
-                    "stock":Util.get_input_with_default("Stok", item['stock'], int),
-                    "price":Util.get_input_with_default("Harga", item['price'], int),
-                    "sellPrice":Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
+                    "category": Util.get_input_with_default("Kategori", item['category']),
+                    "stock": Util.get_input_with_default("Stok", item['stock'], int),
+                    "price": Util.get_input_with_default("Harga", item['price'], int),
+                    "sellPrice": Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
                     "entrydate": item['entrydate'],
-                    "desc":Util.get_input_with_default("Deskripsi", item['desc']),
-                    "supplier":Util.get_input_with_default("Supplier", item['supplier']),
-                    "status":Util.get_input_with_default("Status", item['status'])
+                    "desc": Util.get_input_with_default("Deskripsi", item['desc']),
+                    "supplier": Util.get_input_with_default("Supplier", item['supplier']),
+                    "status": Util.get_input_with_default("Status", item['status'])
                 }
-                
-                # Update item dan tampilkan pesan sukses
+
+                # Update item
                 item_manager.update_item(item_name, updated_item)
                 console.print("[bold green]Barang berhasil diperbarui.[/bold green]")
+
+                # Cek perubahan stok
+                stok_baru = updated_item["stock"]
+                selisih = stok_baru - stok_awal
+
+                if selisih != 0:
+                    # untuk ID unik
+
+                    Util.createTransaction(updated_item["name"], stok_awal, stok_baru, updated_item["supplier"], updated_item["price"], transaction)
+
             else:
                 console.print("[bold red]Barang tidak ditemukan.[/bold red]")
                 Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
@@ -534,6 +550,8 @@ def menu_registrasi(userManager: UserManager):
         console.print("[red]❌ Gagal menambahkan pengguna. Username mungkin sudah digunakan atau role tidak valid.[/red]")
 
     input("Tekan Enter untuk kembali...")
+    
+    
 
 def menu_laporan():
     console = Console()
@@ -541,12 +559,15 @@ def menu_laporan():
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Laporan[/bold cyan]"))
         console.print("""
-1. Laporan Stok Barang
-2. Laporan Transaksi Barang
+1. Lihat transaksi
+2. buat laporan trasanksi barang
 3. Kembali
 """)
         p = input("Pilih menu: ")
-        if p == "3":
+        if p == "1" :
+            Util.display_transactions(transaction)
+            input()
+        elif p == "3":
             break
 
 # Eksekusi utama

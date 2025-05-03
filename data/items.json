@@ -6,36 +6,14 @@
         "4": "pakaian"
     },
     "items": {
-        "Televisi": {
-            "name": "Televisi",
-            "category": "elektronik",
-            "stock": 8,
-            "price": 2000000,
-            "sellPrice": 3000000,
-            "entrydate": "2025-04-29T21:00:35.190673",
-            "desc": "televisi",
-            "supplier": "PT Indo",
-            "status": "aktif"
-        },
         "laptop asus": {
             "name": "laptop asus",
             "category": "elektronik",
-            "stock": 100,
+            "stock": 10,
             "price": 5000000,
             "sellPrice": 5500000,
-            "entrydate": "2025-05-01T11:09:11.986963",
-            "desc": "laptop asus keluaran terbaru",
-            "supplier": "gitsune_san",
-            "status": "aktif"
-        },
-        "iphone 20": {
-            "name": "iphone 20",
-            "category": "elektronik",
-            "stock": 100,
-            "price": 100000,
-            "sellPrice": 1200000,
-            "entrydate": "2025-05-01T11:33:02.528304",
-            "desc": "iphone keluaran 2030",
+            "entrydate": "2025-05-03T14:24:56.792458",
+            "desc": "laptop keren",
             "supplier": "dudung",
             "status": "aktif"
         },
@@ -43,10 +21,21 @@
             "name": "mouse ryzen",
             "category": "elektronik",
             "stock": 100,
-            "price": 340000,
-            "sellPrice": 345000,
-            "entrydate": "2025-05-01T14:38:16.399818",
-            "desc": "mouse enak buat gaming",
+            "price": 70000,
+            "sellPrice": 75000,
+            "entrydate": "2025-05-03T14:26:27.131094",
+            "desc": "mouse yang bikin kamu makin jago main valorant",
+            "supplier": "gitsune",
+            "status": "aktif"
+        },
+        "hp infinix": {
+            "name": "hp infinix",
+            "category": "elektronik",
+            "stock": 100,
+            "price": 1500000,
+            "sellPrice": 2000000,
+            "entrydate": "2025-05-03T14:27:15.742713",
+            "desc": "hp infinix keluaran terbaru",
             "supplier": "dudung",
             "status": "aktif"
         }
