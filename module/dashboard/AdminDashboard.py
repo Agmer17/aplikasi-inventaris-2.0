@@ -567,6 +567,9 @@ def menu_laporan():
         if p == "1" :
             Util.display_transactions(transaction)
             input()
+        elif p == "2" :
+            Util.generate_transaction_report_rich(transaction)
+            input()
         elif p == "3":
             break
 

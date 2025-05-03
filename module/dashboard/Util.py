@@ -3,6 +3,11 @@ from module.Manager.UserManager import UserManager
 from rich.table import Table
 from rich.console import Console
 from module.transaction import Transaction
+from rich.panel import Panel
+from rich.align import Align
+from rich.text import Text
+from rich.bar import Bar
+from collections import defaultdict
 
 
 def userTable(title: str, data: UserManager, role: str) -> Table:
@@ -140,3 +145,88 @@ def display_transactions(transactionManager):
         )
 
     console.print(table)
+
+
+
+def generate_transaction_report_rich(transactionsManager):
+    console = Console()
+    transactions = transactionsManager.get_all_transactions()
+    # Ringkasan
+    total_items = 0
+    total_value = 0
+    masuk_count = 0
+    keluar_count = 0
+    quantity_per_item = defaultdict(int)
+
+    # TABEL TRANSAKSI
+    table = Table(title="📦 Laporan Transaksi Barang", show_lines=False, expand=True)
+    table.add_column("ID", style="cyan", no_wrap=True, width=8)
+    table.add_column("Barang", style="bold", width=15)
+    table.add_column("Tipe", style="green", width=7)
+    table.add_column("Qty", justify="right", width=4)
+    table.add_column("Harga", justify="right", width=12)
+    table.add_column("Total", justify="right", width=14)
+    table.add_column("Tanggal", style="dim", width=16)
+    table.add_column("Supplier", style="magenta", width=10)
+    table.add_column("Catatan", style="yellow", width=20)
+
+    for trx in transactions:
+        id_short = trx["id"][:8]
+        name = trx["itemName"]
+        tipe = trx["type"]
+        qty = trx["quantity"]
+        harga = f"Rp {trx['pricePerItem']:,.0f}"
+        total = f"Rp {trx['totalPrice']:,.0f}"
+        tgl = trx["date"][:16]
+        supplier = trx.get("supplier") or "-"
+        notes = trx.get("notes") or "-"
+
+        table.add_row(id_short, name, tipe, str(qty), harga, total, tgl, supplier, notes)
+
+        # Ringkasan data
+        total_items += qty
+        total_value += trx["totalPrice"]
+        quantity_per_item[name] += qty
+        if tipe == "masuk":
+            masuk_count += 1
+        elif tipe == "keluar":
+            keluar_count += 1
+
+    # Cetak tabel
+    console.print(table)
+
+    # Ringkasan
+    summary_panel = Panel.fit(
+        f"[bold green]Total transaksi:[/bold green] {len(transactions)}\n"
+        f"[green]Masuk:[/green] {masuk_count}   [red]Keluar:[/red] {keluar_count}\n"
+        f"[bold blue]Total barang:[/bold blue] {total_items}\n"
+        f"[bold blue]Total nilai transaksi:[/bold blue] Rp {total_value:,.0f}",
+        title="📈 Ringkasan",
+        border_style="blue"
+    )
+    console.print(summary_panel)
+
+    # BAR CHART JUMLAH BARANG
+    if quantity_per_item: # Pastikan ada data sebelum menghitung max
+        max_len = max(len(name) for name in quantity_per_item)
+        max_qty = max(quantity_per_item.values())
+        bar_size = 30 # Lebar maksimum bar dalam karakter
+
+        if max_qty == 0: # Hindari pembagian dengan nol jika semua qty adalah 0
+            max_qty = 1 # Atur max_qty ke 1 agar bar tetap terlihat (atau bisa diubah logikanya)
+
+        for name, qty in quantity_per_item.items():
+            # Hitung panjang bar berdasarkan proporsi qty terhadap max_qty
+            bar_length = int((qty / max_qty) * bar_size)
+            # Buat string bar menggunakan karakter blok '█'
+            bar_string = '█' * bar_length
+            # Tambahkan spasi di belakang bar agar panjang totalnya bar_size (opsional, untuk alignment visual)
+            # padding = ' ' * (bar_size - bar_length)
+            # Aplikasikan warna cyan menggunakan sintaks rich
+            colored_bar = f"[cyan]{bar_string}[/cyan]"
+
+            # Format label nama item agar rata kiri dengan panjang max_len
+            label = f"{name:<{max_len}}"
+
+            # Cetak label, bar, dan kuantitas
+            console.print(f"{label} {colored_bar} {qty}")
