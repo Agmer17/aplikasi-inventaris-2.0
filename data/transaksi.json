@@ -34,5 +34,29 @@
         "customer": null,
         "supplier": "dudung",
         "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "e15a2614-d75b-4e12-8c1e-fa24fe1272e2",
+        "itemName": "hp infinix",
+        "type": "masuk",
+        "quantity": 1,
+        "pricePerItem": 1500000,
+        "totalPrice": 1500000,
+        "date": "2025-05-03T21:39:24.575218",
+        "customer": null,
+        "supplier": "dudung",
+        "notes": "Perubahan stok"
+    },
+    {
+        "id": "8a126cfa-9ad5-475c-9949-e5148ada745f",
+        "itemName": "jam digital",
+        "type": "masuk",
+        "quantity": 10,
+        "pricePerItem": 120000,
+        "totalPrice": 1200000,
+        "date": "2025-05-03T21:55:45.776016",
+        "customer": null,
+        "supplier": "dudung",
+        "notes": "Penambahan barang baru"
     }
 ]

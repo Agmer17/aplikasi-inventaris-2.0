@@ -107,27 +107,41 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             item = item_manager.get_item(item_name)
 
             if item:
-                stok_awal = item['stock']
+                stok_awal = int(item['stock'])
 
-                # Langsung update item sekaligus ambil nilai baru
-                updated_item = {
-                    "name": item['name'],
-                    "category": Util.get_input_with_default("Kategori", item['category']),
-                    "stock": Util.get_input_with_default("Stok", item['stock'], int),
-                    "price": Util.get_input_with_default("Harga", item['price'], int),
-                    "sellPrice": Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
-                    "entrydate": item['entrydate'],
-                    "desc": Util.get_input_with_default("Deskripsi", item['desc']),
-                    "supplier": Util.get_input_with_default("Supplier", item['supplier']),
-                    "status": Util.get_input_with_default("Status", item['status'])
+                # # Langsung update item sekaligus ambil nilai baru
+                # updated_item = {
+                #     "name": item['name'],
+                #     "category": Util.get_input_with_default("Kategori", item['category']),
+                #     "stock": Util.get_input_with_default("Stok", item['stock'], int),
+                #     "price": Util.get_input_with_default("Harga", item['price'], int),
+                #     "sellPrice": Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
+                #     "entrydate": item['entrydate'],
+                #     "desc": Util.get_input_with_default("Deskripsi", item['desc']),
+                #     "supplier": Util.get_input_with_default("Supplier", item['supplier']),
+                #     "status": Util.get_input_with_default("Status", item['status'])
+                # }
+
+                # # Update item
+                # item_manager.update_item(item_name, updated_item)
+                
+                fields = {
+                    "name": f"Nama [{item['name']}]",
+                    "category": f"Kategori [{item['category']}]",
+                    "stock": f"Stok [{item['stock']}]",
+                    "price": f"Harga [{item['price']}]",
+                    "sellPrice": f"Harga Jual [{item['sellPrice']}]",
+                    "desc": f"Deskripsi [{item['desc']}]",
+                    "supplier": f"Supplier [{item['supplier']}]",
+                    "status": f"Status [{item['status']}]"
                 }
-
-                # Update item
-                item_manager.update_item(item_name, updated_item)
+                updated_item:dict = Util.editAllData(item_name, item_manager, fields)
                 console.print("[bold green]Barang berhasil diperbarui.[/bold green]")
+                input()
 
                 # Cek perubahan stok
-                stok_baru = updated_item["stock"]
+                stok_baru = int(updated_item["stock"])
+                input(f"{stok_baru}")
                 selisih = stok_baru - stok_awal
 
                 if selisih != 0:
@@ -288,7 +302,7 @@ def menu_karyawan(listDataUser: UserManager):
         choice = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
 
         if choice == "1":
-            Util.printTable("daftar karyawan", listDataUser, "employe")
+            Util.printTable("daftar karyawan", listDataUser, "employee")
 
 
             tempUsername = Prompt.ask("Masukkan username yang ingin diedit: ")
@@ -304,10 +318,7 @@ def menu_karyawan(listDataUser: UserManager):
                     "password": f"Password baru [{user.password}]"
                 }
 
-                for key, prompt_text in fields.items():
-                    new_value = Prompt.ask(prompt_text)
-                    if new_value:
-                        listDataUser.editUser(tempUsername, key, new_value)
+                Util.editAllData(tempUsername, listDataUser, fields)
                 console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
             else:
                 console.print("[red]Username tidak ditemukan atau bukan karyawan![/red]")
@@ -369,10 +380,7 @@ def menu_supplier(listDataUser: UserManager):
                     "password": f"Password baru [{supplier.password}]"
                 }
 
-                for key, prompt_text in fields.items():
-                    new_value = Prompt.ask(prompt_text)
-                    if new_value:
-                        listDataUser.editUser(username, key, new_value)
+                Util.editAllData(username, listDataUser, fields)
                 console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
             else:
                 console.print("[red]❌ Supplier tidak ditemukan![/red]")
@@ -449,22 +457,14 @@ def menu_peminjam(listDataUser: UserManager):
             peminjam = listDataUser.findUser(username)
             if peminjam and peminjam.role == "user":
                 console.print("[yellow]Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
-                new_username = Prompt.ask("Username baru", default=username)
-                new_name = Prompt.ask("Nama baru", default=peminjam.name)
-                new_email = Prompt.ask("Email baru", default=peminjam.email)
-                new_password = Prompt.ask("Password baru", default=peminjam.password)
-
-                if new_username != username:
-                    # Pindah data
-                    user_data = listDataUser.items.pop(username)
-                    user_data.changeUsername(new_username)
-                    listDataUser.items[new_username] = user_data
-                    username = new_username
-
-                peminjam = listDataUser.findUser(username)
-                peminjam.changeName(new_name)
-                peminjam.changeEmail(new_email)
-                peminjam.changePassword(new_password)
+                fields = {
+                    "username": f"Username baru [{user.username}]",
+                    "nama": f"Nama baru [{user.name}]",
+                    "email": f"Email baru [{user.email}]",
+                    "password": f"Password baru [{user.password}]"
+                }
+                
+                Util.editAllData(username, listDataUser, fields)
 
                 console.print("[green]✅ Data peminjam berhasil diubah[/green]")
             else:

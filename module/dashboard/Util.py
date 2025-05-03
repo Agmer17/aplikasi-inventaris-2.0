@@ -4,10 +4,8 @@ from rich.table import Table
 from rich.console import Console
 from module.transaction import Transaction
 from rich.panel import Panel
-from rich.align import Align
-from rich.text import Text
-from rich.bar import Bar
 from collections import defaultdict
+from rich.prompt import Prompt
 
 
 def userTable(title: str, data: UserManager, role: str) -> Table:
@@ -72,6 +70,27 @@ def get_input_with_default(prompt, default_value, convert_type=None):
         if convert_type and user_input != default_value:
             return convert_type(user_input)
         return user_input if convert_type is None else convert_type(user_input)
+
+def editAllData(name: str, listData: UserManager | ItemsManager, fields:dict) :
+    if isinstance(listData, UserManager) : 
+        for key, prompt_text in fields.items():
+            new_value = Prompt.ask(prompt_text)
+            if new_value:
+                listData.editUser(name, key, new_value)
+        return
+    
+    if isinstance(listData, ItemsManager) : 
+        editedItems = listData.get_item(name)
+        
+        if editedItems : 
+            for key, val in fields.items() :
+                new_value = Prompt.ask(val)
+                if new_value : 
+                    editedItems[key] = new_value
+            listData.update_item(name, editedItems)
+        
+        return editedItems
+    pass
 
 def createTransaction(
     item_name: str,

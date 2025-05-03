@@ -72,9 +72,20 @@ class ItemsManager :
         self.save_data()
 
     def update_item(self, item_name, item_data):
-        if item_name in self.data["items"]:
-            self.data["items"][item_name] = item_data
-            self.save_data()
+        items = self.data["items"]
+        
+    
+        # Hapus key lama jika nama diubah
+        new_name = item_data["name"]
+        if item_name != new_name:
+            if new_name in items:
+                print("Item dengan nama baru sudah ada!")  # bisa ganti jadi error handling
+                return
+            del items[item_name]
+        
+        # Simpan dengan key baru (tetap old_name kalau tidak berubah)
+        items[new_name] = item_data
+        self.save_data()
 
     def delete_item(self, item_name):
         if item_name in self.data["items"]:

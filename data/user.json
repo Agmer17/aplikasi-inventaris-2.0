@@ -23,12 +23,6 @@
         "password": "loveandpeace",
         "role": "admin"
     },
-    "felix_argyle": {
-        "name": "Ferris Argyle",
-        "email": "felix@example.com",
-        "password": "nyaapass",
-        "role": "employee"
-    },
     "spike_spiegel": {
         "name": "Spike Spiegel",
         "email": "spike@example.com",
@@ -77,16 +71,22 @@
         "password": "12345",
         "role": "user"
     },
-    "hiuraAja": {
-        "name": "hiura",
-        "email": "hiura@gmail.com",
-        "password": "123455",
-        "role": "employee"
-    },
     "gitsune": {
         "name": "Gitsune",
         "email": "gitsune@example.com",
         "password": "kitsunepass",
         "role": "supplier"
+    },
+    "hiuraAja": {
+        "name": "hiura",
+        "email": "hiura@gmail.com",
+        "password": "12345",
+        "role": "employee"
+    },
+    "felix": {
+        "name": "Ferris Argyle",
+        "email": "felix@example.com",
+        "password": "nyaapass",
+        "role": "employee"
     }
 }

@@ -31,11 +31,22 @@
         "hp infinix": {
             "name": "hp infinix",
             "category": "elektronik",
-            "stock": 100,
+            "stock": "101",
             "price": 1500000,
             "sellPrice": 2000000,
             "entrydate": "2025-05-03T14:27:15.742713",
             "desc": "hp infinix keluaran terbaru",
+            "supplier": "dudung",
+            "status": "aktif"
+        },
+        "jam digital": {
+            "name": "jam digital",
+            "category": "elektronik",
+            "stock": 10,
+            "price": 120000,
+            "sellPrice": 150000,
+            "entrydate": "2025-05-03T21:55:32.897380",
+            "desc": "jam digital keren dan modern",
             "supplier": "dudung",
             "status": "aktif"
         }
