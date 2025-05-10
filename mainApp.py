@@ -7,8 +7,6 @@ from module.dashboard.EmployeeDashboard import main_menu as employeeMenu
 from module.dashboard.SupplierDashboard import supplier_main_menu
 from module.dashboard.UserDashboard import user_main_menu
 
-
-
 data = UserManager("data/user.json")
 items = ItemsManager()
 
@@ -23,7 +21,7 @@ if hasattr(currentUser, 'role'):
     elif role == "supplier":
         supplier_main_menu()
     elif role == "user":
-        user_main_menu(item_manager=items, userManager=data)
+        user_main_menu(item_manager=items, userManager=data, currentUser=currentUser)
     else:
         print(f"[ERROR] Role '{role}' tidak dikenali.")
 else:

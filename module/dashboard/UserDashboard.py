@@ -6,10 +6,13 @@ from rich.prompt import Prompt
 from rich.table import Table
 from module.Manager.UserManager import UserManager
 from module.Manager.ItemsManager import ItemsManager
+from module.dashboard import Util
+from module.Manager.TransactionManager import TransactionManager
 
 console = Console()
+transaction = TransactionManager()
 
-def user_main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
+def user_main_menu(item_manager: ItemsManager, userManager:UserManager, currentUser) -> None:
     while True:
         console.clear()
         console.print(Panel.fit("👋 [bold cyan]Selamat datang, Pengguna![/bold cyan]\nGunakan dashboard ini untuk mengelola data barang dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Pengguna"))
@@ -26,9 +29,9 @@ def user_main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
         if pilihan == "1":
             menu_daftar_barang(item_manager)
         elif pilihan == "2":
-            menu_pinjam_barang()
+            menu_pinjam_barang(item_manager, currentUser)
         elif pilihan == "3":
-            menu_barang_dipinjam()
+            menu_barang_dipinjam(transaction, currentUser.username)
         elif pilihan == "4":
             menu_cari_barang()
         elif pilihan == "5":
@@ -40,27 +43,39 @@ def user_main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
             console.print("[bold red]Pilihan tidak valid![/bold red]")
 
 
-def menu_daftar_barang(item_manager):
-    items = item_manager.get_all_items()
-    if items:
-        table = Table(title="Daftar Barang")
-        table.add_column("Nama Barang", style="cyan", justify="center")
-        table.add_column("Kategori", style="magenta")
-        table.add_column("Stok", style="green")
+def menu_daftar_barang(item_manager:ItemsManager):
+    Util.printTable("daftar items", item_manager, "items")
+    Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
-        for item_name, item in items.items():
-            table.add_row(item_name, item['category'], str(item['stock']))
+def menu_pinjam_barang(item_Manager:ItemsManager, currentUser):
+    console.clear()
+    Util.printTable("daftar barang", item_Manager, "items")
+    itemNameToBuy = Prompt.ask("Masukan nama barang yg ingin dibeli ")
+    itemToBuy = item_Manager.get_item(itemNameToBuy)
+    
+    if itemNameToBuy : 
+        amount = int(Prompt.ask(f"Masukan jumlah item yang ingin dibeli "))
+        old_stock = int(itemToBuy["stock"])
+        
+        if amount <= old_stock : 
+            newStock = old_stock - amount
+            Util.createTransaction(itemToBuy["name"], old_stock, newStock, itemToBuy["supplier"], itemToBuy["price"], transaction, "pembelian barang", currentUser.username)
+            
+            itemToBuy["stock"] = newStock
+            item_Manager.update_item(itemToBuy["name"], itemToBuy)
+            console.print("[bold green]pembelian berhasil dilakukan[/bold green]")
+            Prompt.ask("[bold green]TEKAN ENTER[/bold green]")
+            
+        else : 
+            console.print("[bold red]JUMLAH YANG DIMASUKKAN TIDAK VALID! TRANSAKSI DIBATALKAN![/bold red]")
+            Prompt.ask("[ENTER]")
+    else : 
+        console.print("[bold red]Barang tidak ditemukan![/bold red]")
+        Prompt.ask("[ENTER]")
 
-            console.print(table)
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
-    else:
-        print("Tidak ada barang.")
-
-def menu_pinjam_barang():
-   pass
-
-def menu_barang_dipinjam():
-   pass
+def menu_barang_dipinjam(transactions: TransactionManager, username:str) -> None:
+    Util.displayTrByUser(transactions.getTransactionByUser(username))
+    Prompt.ask("[bold green][ENTER][/bold green]")
 def menu_cari_barang():
    pass
 def menu_barang_employee():

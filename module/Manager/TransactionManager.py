@@ -121,3 +121,6 @@ class TransactionManager:
         except Exception as e:
             print(f"Terjadi kesalahan saat memuat transaksi: {str(e)}")
             return []
+    
+    def getTransactionByUser(self,username:str) : 
+        return [tr for tr in self.transactions if tr.customer == username]

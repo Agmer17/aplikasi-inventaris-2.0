@@ -9,7 +9,7 @@ import module.dashboard.Util as Util
 from module.Manager.TransactionManager import TransactionManager
 
 # testing
-transaction = TransactionManager();
+transaction = TransactionManager()
 
 def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
     console = Console()
@@ -108,22 +108,6 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
 
             if item:
                 stok_awal = int(item['stock'])
-
-                # # Langsung update item sekaligus ambil nilai baru
-                # updated_item = {
-                #     "name": item['name'],
-                #     "category": Util.get_input_with_default("Kategori", item['category']),
-                #     "stock": Util.get_input_with_default("Stok", item['stock'], int),
-                #     "price": Util.get_input_with_default("Harga", item['price'], int),
-                #     "sellPrice": Util.get_input_with_default("Harga Jual", item['sellPrice'], int),
-                #     "entrydate": item['entrydate'],
-                #     "desc": Util.get_input_with_default("Deskripsi", item['desc']),
-                #     "supplier": Util.get_input_with_default("Supplier", item['supplier']),
-                #     "status": Util.get_input_with_default("Status", item['status'])
-                # }
-
-                # # Update item
-                # item_manager.update_item(item_name, updated_item)
                 
                 fields = {
                     "name": f"Nama [{item['name']}]",
@@ -145,8 +129,6 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                 selisih = stok_baru - stok_awal
 
                 if selisih != 0:
-                    # untuk ID unik
-
                     Util.createTransaction(updated_item["name"], stok_awal, stok_baru, updated_item["supplier"], updated_item["price"], transaction)
 
             else:

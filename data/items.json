@@ -9,7 +9,7 @@
         "laptop asus": {
             "name": "laptop asus",
             "category": "elektronik",
-            "stock": 10,
+            "stock": 11,
             "price": 5000000,
             "sellPrice": 5500000,
             "entrydate": "2025-05-03T14:24:56.792458",

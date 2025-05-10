@@ -99,7 +99,8 @@ def createTransaction(
     supplier: str,
     price_per_item: float,
     transaction_manager,
-    reason: str = "Perubahan stok"
+    reason: str = "Perubahan stok", 
+    customer: str|None = None
 ):
     console = Console()
     """
@@ -122,7 +123,7 @@ def createTransaction(
         "quantity": abs(selisih),
         "supplier": supplier,
         "pricePerItem": price_per_item,
-        "customer": None,
+        "customer": customer,
         "notes": reason
     }
 
@@ -163,6 +164,37 @@ def display_transactions(transactionManager):
             trx.get("notes", "-") or "-"
         )
 
+    console.print(table)
+
+def displayTrByUser(listOfTransaction: list) -> None : 
+    table = Table(title="Daftar Transaksi Barang", show_lines=True)
+    console = Console()
+    
+    table.add_column("ID", style="cyan", no_wrap=True, max_width=10)
+    table.add_column("Barang", style="bold", max_width=15)
+    table.add_column("Tipe", style="green", width=6)
+    table.add_column("Qty", justify="right", width=5)
+    table.add_column("Harga", justify="right", width=12)
+    table.add_column("Total", justify="right", width=12)
+    table.add_column("Tgl", style="dim", width=16)
+    table.add_column("Sup", style="magenta", max_width=10)
+    table.add_column("Cus", style="magenta", max_width=10)
+    table.add_column("Catatan", style="yellow", max_width=20)
+    
+    for data in listOfTransaction:
+        trx = data.getAllData()
+        table.add_row(
+            trx["id"],
+            trx["itemName"],
+            trx["type"],
+            str(trx["quantity"]),
+            f"Rp {trx['pricePerItem']:,.0f}",
+            f"Rp {trx['totalPrice']:,.0f}",
+            trx["date"],
+            trx.get("supplier", "-") or "-",
+            trx.get("customer", "-") or "-",
+            trx.get("notes", "-") or "-"
+        )
     console.print(table)
 
 

@@ -58,5 +58,17 @@
         "customer": null,
         "supplier": "dudung",
         "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "a6a2f25e-6bae-4207-8856-02cd5a46c5d3",
+        "itemName": "laptop asus",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 5000000,
+        "totalPrice": 5000000,
+        "date": "2025-05-10T13:57:45.784214",
+        "customer": "testing",
+        "supplier": "dudung",
+        "notes": "pembelian barang"
     }
 ]
