@@ -458,7 +458,7 @@ def menu_peminjam(listDataUser: UserManager):
             
             username = Prompt.ask("Masukkan username peminjam yang akan dihapus")
             user = listDataUser.findUser(username)
-            if user and user.role == "pembeli":
+            if user and user.role == "user":
                 listDataUser.deleteData(username)
                 console.print("[green]Peminjam berhasil dihapus.[/green]")
             else:

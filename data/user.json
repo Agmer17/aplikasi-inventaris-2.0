@@ -65,12 +65,6 @@
         "password": "12345",
         "role": "admin"
     },
-    "testing": {
-        "name": "test",
-        "email": "testing@gmail.com",
-        "password": "12345",
-        "role": "user"
-    },
     "gitsune": {
         "name": "Gitsune",
         "email": "gitsune@example.com",
@@ -88,5 +82,11 @@
         "email": "felix@example.com",
         "password": "nyaapass",
         "role": "employee"
+    },
+    "pembeli1": {
+        "name": "pembeli",
+        "email": "pembeli@gmail.com",
+        "password": "12345",
+        "role": "user"
     }
 }
