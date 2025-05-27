@@ -97,9 +97,25 @@ class ItemsManager :
     def search_item(self, search_term):
         return {k: v for k, v in self.data["items"].items() if search_term.lower() in k.lower()}
 
-    def sort_items(self, sort_by):
-        sorted_items = sorted(self.data["items"].items(), key=lambda x: x[1][sort_by])
-        return dict(sorted_items)
+    def quick_sort(self, data, key_func, reverse=False):
+        if len(data) <= 1:
+            return data
+        else:
+            pivot = key_func(data[0])
+            left = [item for item in data[1:] if (key_func(item) < pivot) != reverse]
+            right = [item for item in data[1:] if (key_func(item) >= pivot) != reverse]
+            return self.quick_sort(left, key_func, reverse) + [data[0]] + self.quick_sort(right, key_func, reverse)
+
+    def get_sorted_items(self, by="name", reverse=False):
+        items = self.get_all_items()
+        if by == "name":
+            return self.quick_sort(list(items.items()), key_func=lambda x: x[1]["name"].lower(), reverse=reverse)
+        elif by == "price":
+            return self.quick_sort(list(items.items()), key_func=lambda x: x[1]["price"], reverse=reverse)
+        elif by == "stock":
+            return self.quick_sort(list(items.items()), key_func=lambda x: int(x[1]["stock"]), reverse=reverse)
+        else:
+            return list(items.items())  
     
     def update_stock(self, item_name, new_stock):
         """

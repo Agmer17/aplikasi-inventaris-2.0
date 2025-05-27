@@ -224,6 +224,92 @@ class SupplierDashboard:
                 
         except (ValueError, IndexError) as e:
             console.print(f"[red]❌ Input tidak valid: {e}[/red]")
+            
+        
+    def menu_sorting_barang(self):
+        """
+        Menyortir barang milik supplier berdasarkan kriteria tertentu.
+        """
+        console.print("\n[bold green]-- Sorting Barang Anda --[/bold green]")
+        console.print("""
+    [bold green]1.[/bold green] Urutkan berdasarkan Nama (A-Z)
+    [bold green]2.[/bold green] Urutkan berdasarkan Harga Jual Termurah
+    [bold green]3.[/bold green] Urutkan berdasarkan Harga Jual Termahal
+    [bold green]4.[/bold green] Kembali
+    """)
+        
+        pilihan = Prompt.ask("Pilih opsi", choices=["1", "2", "3", "4"])
+
+        supplier_items = self.get_supplier_items()
+        
+        if not supplier_items:
+            console.print("[yellow]Anda belum memiliki barang.[/yellow]")
+            return
+
+        if pilihan == "1":
+            sorted_items = dict(sorted(supplier_items.items()))
+        elif pilihan == "2":
+            sorted_items = dict(sorted(supplier_items.items(), key=lambda x: x[1].get('sellPrice', 0)))
+        elif pilihan == "3":
+            sorted_items = dict(sorted(supplier_items.items(), key=lambda x: x[1].get('sellPrice', 0), reverse=True))
+        elif pilihan == "4":
+            return
+
+        table = Table(title="Barang Anda - Hasil Sorting")
+        table.add_column("Nama Barang", style="cyan")
+        table.add_column("Kategori", style="magenta")
+        table.add_column("Stok", style="green")
+        table.add_column("Harga Jual", style="red")
+
+        for item_name, item_data in sorted_items.items():
+            table.add_row(
+                item_name,
+                item_data['category'],
+                str(item_data['stock']),
+                f"Rp {item_data['sellPrice']:,}"
+            )
+
+        console.print(table)
+        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+    
+    def menu_cari_barang(self):
+        console.print("\n[bold green]-- Cari Barang Anda --[/bold green]")
+        
+        search_term = Prompt.ask("Masukkan nama barang yang dicari")
+        if not search_term.strip():
+            console.print("[red]Kata kunci pencarian tidak boleh kosong.[/red]")
+            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+            return
+        
+        supplier_items = self.get_supplier_items()
+        hasil = {name: data for name, data in supplier_items.items() if search_term.lower() in name.lower()}
+        
+        if not hasil:
+            console.print(f"[yellow]Tidak ditemukan barang dengan kata kunci '{search_term}'.[/yellow]")
+            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+            return
+        
+        table = Table(title=f"Hasil Pencarian Barang Anda: '{search_term}'")
+        table.add_column("Nama Barang", style="cyan")
+        table.add_column("Kategori", style="magenta")
+        table.add_column("Stok", style="green")
+        table.add_column("Harga Beli", style="yellow")
+        table.add_column("Harga Jual", style="red")
+
+        for item_name, item in hasil.items():
+            table.add_row(
+                item_name,
+                item['category'],
+                str(item['stock']),
+                f"Rp {item['price']:,}",
+                f"Rp {item['sellPrice']:,}"
+            )
+        
+        console.print(table)
+        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+
+
+
 
 def supplier_main_menu(supplier_username: str, supplier_name: str):
     """
@@ -265,9 +351,11 @@ def menu_barang_supplier(dashboard: SupplierDashboard):
 [bold green]2.[/bold green] Edit Barang
 [bold green]3.[/bold green] Hapus Barang
 [bold green]4.[/bold green] Lihat Daftar Barang
-[bold green]5.[/bold green] Kembali                     
+[bold green]5.[/bold green] Sorting Daftar Barang
+[bold green]6.[/bold green] Cari Daftar Barang
+[bold green]7.[/bold green] Kembali                     
 """)
-        pilihan = input("Masukkan pilihan (1-5): ")
+        pilihan = input("Masukkan pilihan (1-7): ")
         
         if pilihan == "1":
             dashboard.add_item()
@@ -282,6 +370,11 @@ def menu_barang_supplier(dashboard: SupplierDashboard):
             dashboard.show_supplier_items()
             input("Tekan Enter untuk melanjutkan...")
         elif pilihan == "5":
+            dashboard.menu_sorting_barang()
+        elif pilihan == "6":
+            dashboard.menu_cari_barang()
+            input("Tekan Enter untuk melanjutkan...")
+        elif pilihan == "7":
             break
         else:
             console.print("[bold red]Pilihan tidak valid![/bold red]")

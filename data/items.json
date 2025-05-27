@@ -3,7 +3,8 @@
         "1": "elektronik",
         "2": "alat musik",
         "3": "olahraga",
-        "4": "pakaian"
+        "4": "pakaian",
+        "5": "Pangan"
     },
     "items": {
         "laptop asus": {
@@ -60,7 +61,7 @@
             "desc": "spidol",
             "supplier": "dudung",
             "status": "aktif"
-        },    
+        },
         "scanner": {
             "name": "scanner",
             "category": "elektronik",

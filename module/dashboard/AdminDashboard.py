@@ -160,54 +160,49 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
 
         elif choice == '5':
-            search_term = input("Masukkan nama barang yang ingin dicari: ")
+            search_term = Prompt.ask("[bold cyan]Masukkan nama barang yang ingin dicari[/bold cyan]")
             items = item_manager.search_item(search_term)
             if items:
                 table = Table(title="Hasil Pencarian Barang")
                 table.add_column("Nama Barang", style="cyan", justify="center")
                 table.add_column("Kategori", style="magenta")
-                table.add_column("Stok", style="green")
+                table.add_column("Stok", style="green", justify="right")
 
                 for item_name, item in items.items():
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
-                Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+                Prompt.ask("[bold yellow]Tekan enter untuk lanjut[/bold yellow]")
             else:
-                print("Barang tidak ditemukan.") 
+                console.print("[bold red]Barang tidak ditemukan.[/bold red]")
+                Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
 
         elif choice == '6':
-            print("Sort By:")
-            print("1. Nama")
-            print("2. Harga")
-            print("3. Stok")
-            sort_choice = input("Pilih opsi untuk sorting: ")
+            console.print("[bold cyan]Sort By:[/bold cyan]")
+            console.print("1. Nama\n2. Harga\n3. Stok")
+            sort_choice = Prompt.ask("Pilih opsi untuk sorting", choices=["1", "2", "3"], default="1")
+
             if sort_choice == '1':
-                sorted_items = item_manager.sort_items('name')
+                sorted_items = item_manager.get_sorted_items(by="name")
             elif sort_choice == '2':
-                sorted_items = item_manager.sort_items('price')
+                sorted_items = item_manager.get_sorted_items(by="price")
             elif sort_choice == '3':
-                sorted_items = item_manager.sort_items('stock')
-            else:
-                print("Pilihan tidak valid.")
-                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
-                continue
+                sorted_items = item_manager.get_sorted_items(by="stock")
 
             if sorted_items:
                 table = Table(title="Barang yang Disortir")
                 table.add_column("Nama Barang", style="cyan", justify="center")
                 table.add_column("Kategori", style="magenta")
-                table.add_column("Stok", style="green")
+                table.add_column("Stok", style="green", justify="right")
 
-                for item_name, item in sorted_items.items():
-                    table.add_row(item_name, item['category'], str(item['stock']))
+                for item_name, item in sorted_items:
+                    table.add_row(item_name, item["category"], str(item["stock"]))
 
                 console.print(table)
-                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
             else:
                 console.print("[bold red]Tidak ada barang.[/bold red]")
-                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
-                
+
+            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
 
         elif choice == '7':
             menu_kategori(item_manager)
@@ -541,8 +536,8 @@ def menu_laporan():
         console.clear()
         console.print(Panel.fit("[bold cyan]Menu Laporan[/bold cyan]"))
         console.print("""
-1. Lihat transaksi
-2. buat laporan trasanksi barang
+1. Lihat Transaksi
+2. Buat Laporan Trasanksi Barang
 3. Kembali
 """)
         p = input("Pilih menu: ")

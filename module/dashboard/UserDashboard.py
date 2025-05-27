@@ -245,29 +245,26 @@ def menu_sorting_barang(item_manager, transaction_manager):
 [bold green]3.[/bold green] Urutkan berdasarkan Harga (Termahal)
 [bold green]4.[/bold green] Kembali
 """)
-    
+
     pilihan = Prompt.ask("Pilih sorting (1-4)")
-    
+
     items = item_manager.get_all_items()
     if not items:
         console.print("[red]Tidak ada barang untuk diurutkan.[/red]")
         Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
         return
-    
+
     # Hitung stok berdasarkan transaksi
     stock_calculation = transaction_manager.calculate_stock()
-    
+
     if pilihan == "1":
-        # Urutkan berdasarkan nama
-        sorted_items = dict(sorted(items.items(), key=lambda x: x[1]['name'].lower()))
+        sorted_items = item_manager.get_sorted_items(by="name", reverse=False)
         title = "Barang Diurutkan berdasarkan Nama (A-Z)"
     elif pilihan == "2":
-        # Urutkan berdasarkan harga (termurah)
-        sorted_items = dict(sorted(items.items(), key=lambda x: x[1]['price']))
+        sorted_items = item_manager.get_sorted_items(by="price", reverse=False)
         title = "Barang Diurutkan berdasarkan Harga (Termurah)"
     elif pilihan == "3":
-        # Urutkan berdasarkan harga (termahal)
-        sorted_items = dict(sorted(items.items(), key=lambda x: x[1]['price'], reverse=True))
+        sorted_items = item_manager.get_sorted_items(by="price", reverse=True)
         title = "Barang Diurutkan berdasarkan Harga (Termahal)"
     elif pilihan == "4":
         return
@@ -275,14 +272,14 @@ def menu_sorting_barang(item_manager, transaction_manager):
         console.print("[red]Pilihan tidak valid.[/red]")
         Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
         return
-    
+
     table = Table(title=title)
     table.add_column("Nama Barang", style="cyan")
     table.add_column("Kategori", style="magenta")
     table.add_column("Stok Tersedia", style="green")
     table.add_column("Harga", style="yellow")
-    
-    for item_name, item in sorted_items.items():
+
+    for item_name, item in sorted_items:
         stok_tersedia = stock_calculation.get(item_name, int(item['stock']))
         table.add_row(
             item_name,
@@ -290,7 +287,7 @@ def menu_sorting_barang(item_manager, transaction_manager):
             str(stok_tersedia),
             f"Rp {item['price']:,}"
         )
-    
+
     console.print(table)
     Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
 
