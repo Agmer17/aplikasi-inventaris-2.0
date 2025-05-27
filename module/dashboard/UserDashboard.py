@@ -10,6 +10,7 @@ from module.Manager.TransactionManager import TransactionManager
 from module.transaction import Transaction
 
 console = Console()
+transaction = TransactionManager()
 
 def user_main_menu(item_manager: ItemsManager, userManager: UserManager, transaction_manager: TransactionManager, username):
     while True:

@@ -65,12 +65,6 @@
         "password": "12345",
         "role": "admin"
     },
-    "testing": {
-        "name": "test",
-        "email": "testing@gmail.com",
-        "password": "12345",
-        "role": "user"
-    },
     "gitsune": {
         "name": "Gitsune",
         "email": "gitsune@example.com",
