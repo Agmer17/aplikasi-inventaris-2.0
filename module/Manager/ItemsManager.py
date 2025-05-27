@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from module.transaction import Transaction
 from module.Manager.TransactionManager import TransactionManager
+
 class ItemsManager : 
     """
     Mengelola data item dalam file JSON.
@@ -37,6 +38,8 @@ class ItemsManager :
                 raise e
 
     def save_data(self):
+        # Pastikan direktori data ada
+        os.makedirs('data', exist_ok=True)
         with open('data/items.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
@@ -74,7 +77,6 @@ class ItemsManager :
     def update_item(self, item_name, item_data):
         items = self.data["items"]
         
-    
         # Hapus key lama jika nama diubah
         new_name = item_data["name"]
         if item_name != new_name:
@@ -98,3 +100,39 @@ class ItemsManager :
     def sort_items(self, sort_by):
         sorted_items = sorted(self.data["items"].items(), key=lambda x: x[1][sort_by])
         return dict(sorted_items)
+    
+    def update_stock(self, item_name, new_stock):
+        """
+        Update stok barang
+        
+        Args:
+            item_name: Nama barang yang akan diupdate stoknya
+            new_stock: Stok baru
+        """
+        if item_name in self.data["items"]:
+            self.data["items"][item_name]['stock'] = new_stock
+            self.save_data()
+            print(f"Stok {item_name} berhasil diupdate menjadi {new_stock}")
+        else:
+            print(f"Barang '{item_name}' tidak ditemukan")
+    
+    def get_available_stock(self, item_name, transaction_manager=None):
+        """
+        Menghitung stok yang tersedia berdasarkan data item dan transaksi
+        
+        Args:
+            item_name: Nama barang
+            transaction_manager: Instance TransactionManager untuk menghitung stok aktual
+        
+        Returns:
+            int: Jumlah stok yang tersedia
+        """
+        item = self.get_item(item_name)
+        if not item:
+            return 0
+        
+        if transaction_manager:
+            stock_calculation = transaction_manager.calculate_stock()
+            return stock_calculation.get(item_name, int(item.get('stock', 0)))
+        else:
+            return int(item.get('stock', 0))

@@ -20,13 +20,23 @@ class TransactionManager:
     
     def add_transaction(self, transaction: Transaction) -> None:
         """
-        Menambahkan transaksi baru ke daftar
+        Menambahkan transaksi baru ke daftar, dengan pengecekan stok jika type == 'keluar'.
         
         Args:
             transaction: Objek Transaction yang akan ditambahkan
         """
+        if transaction.type == "keluar":
+            stock = self.calculate_stock()
+            item_stock = stock.get(transaction.itemName, 0)
+
+            if transaction.quantity > item_stock:
+                print(f"❌ Gagal menambahkan transaksi keluar: Stok '{transaction.itemName}' hanya {item_stock}, "
+                    f"tidak cukup untuk mengurangi {transaction.quantity}.")
+                return
+        
+        # Jika type masuk, atau type keluar tapi stok cukup
         self.transactions.append(transaction)
-        print(f"Transaksi {transaction.id} berhasil ditambahkan")
+        print(f"✅ Transaksi {transaction.id} berhasil ditambahkan")
         self.save_transactions()
     
     def get_all_transactions(self) -> list[Transaction]:
@@ -121,3 +131,25 @@ class TransactionManager:
         except Exception as e:
             print(f"Terjadi kesalahan saat memuat transaksi: {str(e)}")
             return []
+
+    def calculate_stock(self) -> dict:
+        """
+        Menghitung stok akhir untuk setiap item berdasarkan transaksi masuk & keluar.
+        Returns:
+            dict: itemName -> sisa stok
+        """
+        stock = {}
+        for trx in self.transactions:
+                name = trx.itemName
+                qty = trx.quantity
+
+                if name not in stock:
+                    stock[name] = 0
+
+                if trx.type == "masuk":
+                    stock[name] += qty
+                elif trx.type == "keluar":
+                    stock[name] -= qty
+
+        return stock
+

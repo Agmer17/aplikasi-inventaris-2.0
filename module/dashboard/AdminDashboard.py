@@ -25,7 +25,7 @@ def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
 [bold green]6.[/bold green] Laporan 
 [bold green]7.[/bold green] Keluar App
 """)
-        pilihan = input("Masukkan pilihan (1-8): ")
+        pilihan = input("Masukkan pilihan (1-7): ")
 
         if pilihan == "1":
             menu_barang(userManager,item_manager)  

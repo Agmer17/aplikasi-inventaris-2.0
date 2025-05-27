@@ -58,5 +58,53 @@
         "customer": null,
         "supplier": "dudung",
         "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "3c40f9b7-2ce7-4e7f-998b-19bc95f436e5",
+        "itemName": "spidol",
+        "type": "masuk",
+        "quantity": 2,
+        "pricePerItem": 10000,
+        "totalPrice": 20000,
+        "date": "2025-05-18T21:46:49.398217",
+        "customer": null,
+        "supplier": "dudung",
+        "notes": "Penambahan barang baru"
+    },
+    {
+        "id": "6a7a3e55-ab59-480d-9c50-1f7df2a03886",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-27T16:57:17.884348",
+        "customer": "yumna",
+        "supplier": null,
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "7391551e-b922-4d5a-b0cd-e362fd43e06d",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-27T16:57:26.495645",
+        "customer": "yumna",
+        "supplier": null,
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "27077958-044b-4421-8946-268057e29f81",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-27T17:12:19.379060",
+        "customer": "yumna",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
     }
 ]

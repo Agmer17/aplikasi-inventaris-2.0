@@ -15,7 +15,7 @@
         "name": "Rimuru Tempest",
         "email": "rimuru@example.com",
         "password": "12345",
-        "role": "admin"
+        "role": "user"
     },
     "vash_gun": {
         "name": "Vash the Stampede",
@@ -87,6 +87,12 @@
         "name": "Ferris Argyle",
         "email": "felix@example.com",
         "password": "nyaapass",
+        "role": "employee"
+    },
+    "rafid": {
+        "name": "rafid",
+        "email": "raid@gmail.cok",
+        "password": "1234",
         "role": "employee"
     }
 }
