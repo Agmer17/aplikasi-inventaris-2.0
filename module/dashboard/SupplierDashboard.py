@@ -288,4 +288,4 @@ def menu_barang_supplier(dashboard: SupplierDashboard):
             input("Tekan Enter untuk melanjutkan...")
 
 if __name__ == "__main__":
-    supplier_main_menu(supplier_username=currentUser.username, supplier_name=currentUser.name)
+    supplier_main_menu()
