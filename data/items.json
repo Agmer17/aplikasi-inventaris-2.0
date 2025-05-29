@@ -61,17 +61,6 @@
             "desc": "spidol",
             "supplier": "dudung",
             "status": "aktif"
-        },
-        "scanner": {
-            "name": "scanner",
-            "category": "elektronik",
-            "stock": 2,
-            "price": 20000.0,
-            "sellPrice": 20000.0,
-            "desc": "scanner",
-            "supplier": "dudung",
-            "status": "aktif",
-            "entrydate": "2025-05-27T17:41:18.569000"
         }
     }
 }

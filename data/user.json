@@ -45,7 +45,7 @@
         "name": "aretta",
         "email": "aretta@gmail.com",
         "password": "12345",
-        "role": "admin"
+        "role": "user"
     },
     "yumna": {
         "name": "yumna",

@@ -1,4 +1,3 @@
-# dashboard_employee.py
 from rich.panel import Panel
 from datetime import datetime
 from rich.console import Console
@@ -15,15 +14,16 @@ transaction = TransactionManager()
 def user_main_menu(item_manager: ItemsManager, userManager: UserManager, transaction_manager: TransactionManager, username):
     while True:
         console.clear()
-        console.print(Panel.fit("👋 [bold cyan]Selamat datang, Pengguna![/bold cyan]\nGunakan dashboard ini untuk mengelola data barang dan laporan dengan mudah.\nPilih fitur yang ingin dijalankan:", title="Dashboard Pengguna"))
+        console.print(Panel.fit(f"👋 [bold cyan]Selamat Datang, {username.capitalize()}![/bold cyan]\nGunakan dashboard ini untuk melihat dan membeli barang dengan mudah.\nSilakan pilih fitur yang ingin dijalankan:", title="Dashboard Pengguna"))
         console.print("""
 [bold green]1.[/bold green] Lihat Daftar Barang
 [bold green]2.[/bold green] Beli Barang
-[bold green]3.[/bold green] Lihat Barang yang dibeli
+[bold green]3.[/bold green] Riwayat Pembelian
 [bold green]4.[/bold green] Cari Barang
 [bold green]5.[/bold green] Sorting Barang
-[bold green]6.[/bold green] Keluar App
+[bold green]6.[/bold green] Keluar dari Aplikasi
 """)
+
         pilihan = input("Masukkan pilihan (1-6): ")
 
         if pilihan == "1":
@@ -173,13 +173,19 @@ def menu_barang_dibeli(transaction_manager: TransactionManager, username: str):
         Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
         return
 
-    table = Table(title=f"Riwayat Pembelian - {username}")
-    table.add_column("No", style="cyan")
-    table.add_column("Barang")
-    table.add_column("Jumlah")
-    table.add_column("Harga Satuan")
-    table.add_column("Total")
-    table.add_column("Tanggal")
+    table = Table(
+        title=f"\n 📦 Riwayat Pembelian - {username.capitalize()}",
+        header_style="bold white",
+        border_style="grey50",
+        row_styles=["", "grey23"] 
+    )
+
+    table.add_column("No", style="bright_cyan", justify="center")
+    table.add_column("Barang", style="white")
+    table.add_column("Jumlah", style="bright_white", justify="center")
+    table.add_column("Harga Satuan", style="white", justify="right")
+    table.add_column("Total", style="bright_cyan", justify="right")
+    table.add_column("Tanggal", style="white")
 
     total_pengeluaran = 0
     for i, t in enumerate(transaksi_user, start=1):
@@ -240,13 +246,15 @@ def menu_cari_barang(item_manager, transaction_manager):
 def menu_sorting_barang(item_manager, transaction_manager):
     console.print("\n[bold green]-- Sorting Barang --[/bold green]")
     console.print("""
-[bold green]1.[/bold green] Urutkan berdasarkan Nama
+[bold green]1.[/bold green] Urutkan berdasarkan Nama (A-Z)
 [bold green]2.[/bold green] Urutkan berdasarkan Harga (Termurah)
 [bold green]3.[/bold green] Urutkan berdasarkan Harga (Termahal)
-[bold green]4.[/bold green] Kembali
+[bold green]4.[/bold green] Urutkan berdasarkan Stok (Terkecil)
+[bold green]5.[/bold green] Urutkan berdasarkan Stok (Terbanyak)
+[bold green]6.[/bold green] Kembali
 """)
 
-    pilihan = Prompt.ask("Pilih sorting (1-4)")
+    pilihan = Prompt.ask("Pilih sorting (1-6)")
 
     items = item_manager.get_all_items()
     if not items:
@@ -267,6 +275,12 @@ def menu_sorting_barang(item_manager, transaction_manager):
         sorted_items = item_manager.get_sorted_items(by="price", reverse=True)
         title = "Barang Diurutkan berdasarkan Harga (Termahal)"
     elif pilihan == "4":
+        sorted_items = item_manager.get_sorted_items(by="stock", reverse=False, stock_data=stock_calculation)
+        title = "Barang Diurutkan berdasarkan Stok (Terkecil)"
+    elif pilihan == "5":
+        sorted_items = item_manager.get_sorted_items(by="stock", reverse=True, stock_data=stock_calculation)
+        title = "Barang Diurutkan berdasarkan Stok (Terbanyak)"
+    elif pilihan == "6":
         return
     else:
         console.print("[red]Pilihan tidak valid.[/red]")
@@ -290,7 +304,6 @@ def menu_sorting_barang(item_manager, transaction_manager):
 
     console.print(table)
     Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-
-
+    
 if __name__ == "__main__":
     user_main_menu()

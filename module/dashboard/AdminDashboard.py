@@ -529,7 +529,6 @@ def menu_registrasi(userManager: UserManager):
     input("Tekan Enter untuk kembali...")
     
     
-
 def menu_laporan():
     console = Console()
     while True:

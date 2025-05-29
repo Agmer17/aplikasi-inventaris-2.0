@@ -106,5 +106,41 @@
         "customer": "yumna",
         "supplier": "",
         "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "8b18e861-5d91-401e-afa2-c2a6bf8a4b8e",
+        "itemName": "laptop asus",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 5000000,
+        "totalPrice": 5000000,
+        "date": "2025-05-29T17:45:32.251712",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "0a196cd3-3309-4892-adff-a130a84d0dc6",
+        "itemName": "spidol",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 10000,
+        "totalPrice": 10000,
+        "date": "2025-05-29T17:47:54.920905",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "efa44023-ec46-4e81-808b-4bef6f6d0dd3",
+        "itemName": "spidol",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 10000,
+        "totalPrice": 10000,
+        "date": "2025-05-29T17:48:53.712617",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
     }
 ]
