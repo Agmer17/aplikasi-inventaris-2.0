@@ -142,5 +142,77 @@
         "customer": "aretta",
         "supplier": "",
         "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "a13c5cad-6758-4f1e-b996-63d71c3b52f4",
+        "itemName": "laptop asus",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 5000000,
+        "totalPrice": 5000000,
+        "date": "2025-05-29T20:02:29.273057",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "550e6298-cbb4-4c18-86b2-98e4dc803a8d",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-29T20:09:54.769847",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "6c2b6c9c-387b-483e-859f-1c16f0579818",
+        "itemName": "hp infinix",
+        "type": "keluar",
+        "quantity": 3,
+        "pricePerItem": 1500000,
+        "totalPrice": 4500000,
+        "date": "2025-05-29T20:33:43.438320",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "2ca6a0c3-d749-4e0e-a5c5-4ae1ef7baa0d",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-29T20:47:18.144198",
+        "customer": "aretta",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "c9327c6c-feef-4eea-b9d6-e5906eddd273",
+        "itemName": "mouse ryzen",
+        "type": "keluar",
+        "quantity": 2,
+        "pricePerItem": 70000,
+        "totalPrice": 140000,
+        "date": "2025-05-29T21:03:20.234970",
+        "customer": "arettaa",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
+    },
+    {
+        "id": "b522982e-72f9-4f97-b10a-50a3ca18f473",
+        "itemName": "laptop asus",
+        "type": "keluar",
+        "quantity": 1,
+        "pricePerItem": 5000000,
+        "totalPrice": 5000000,
+        "date": "2025-05-29T21:19:05.353205",
+        "customer": "arettaa",
+        "supplier": "",
+        "notes": "Pembelian oleh user"
     }
 ]
