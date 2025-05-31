@@ -46,7 +46,6 @@ class ItemsManager :
         with open('data/items.json', 'w') as f:
             json.dump(self.data, f, indent=4)
 
-    # CRUD untuk Categories
     def get_all_categories(self):
         """
             Mengambil semua kategori dari data
@@ -95,7 +94,6 @@ class ItemsManager :
             del self.data["categories"][category_id]
             self.save_data()
 
-    # CRUD untuk Items
     def get_all_items(self):
         """
             Mengambil semua item dari data
@@ -142,7 +140,6 @@ class ItemsManager :
 
         items = self.data["items"]
         
-        # Hapus key lama jika nama diubah
         new_name = item_data["name"]
         if item_name != new_name:
             if new_name in items:
@@ -150,25 +147,26 @@ class ItemsManager :
                 return
             del items[item_name]
         
-        # Simpan dengan key baru (tetap old_name kalau tidak berubah)
         items[new_name] = item_data
         self.save_data()
 
-    def delete_item(self, item_name):
+    def delete_item(self, item_name: str):
         """
-            Menghapus item dari data berdasarkan nama
+        Menghapus item dari data berdasarkan nama.
 
-            Args:
-                item_name (str): Nama item yang akan dihapus
+        Args:
+            item_name (str): Nama item yang akan dihapus.
         """
-
         if item_name in self.data["items"]:
             del self.data["items"][item_name]
             self.save_data()
+        else:
+            raise ValueError("Item tidak ditemukan.")
+
 
     def search_item(self, search_term):
         """
-            Mencari item berdasarkan kata kunci nama
+            Mencari item berdasarkan kata kunci nama secara linier
 
             Args:
                 search_term (str): Kata kunci pencarian
@@ -176,8 +174,12 @@ class ItemsManager :
             Returns:
                 dict: Dictionary berisi item yang cocok dengan kata kunci
         """
+        hasil = {}
+        for nama, info in self.data["items"].items():
+            if search_term.lower() in nama.lower():
+                hasil[nama] = info
+        return hasil
 
-        return {k: v for k, v in self.data["items"].items() if search_term.lower() in k.lower()}
 
     def quick_sort(self, data, key_func, reverse=False):
         """

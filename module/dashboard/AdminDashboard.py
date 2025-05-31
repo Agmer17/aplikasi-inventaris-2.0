@@ -11,6 +11,26 @@ from module.Manager.TransactionManager import TransactionManager
 # testing
 transaction = TransactionManager()
 
+def validate_input(prompt_text, allow_empty=False, input_type="string"):
+    """
+    Fungsi untuk memvalidasi input dari pengguna
+    """
+    while True:
+        user_input = input(prompt_text).strip()
+        
+        if not allow_empty and not user_input:
+            print("[bold red]❌ Input tidak boleh kosong![/bold red]")
+            continue
+            
+        if input_type == "int":
+            try:
+                return int(user_input)
+            except ValueError:
+                print("[bold red]❌ Input harus berupa angka![/bold red]")
+                continue
+        
+        return user_input
+
 def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
     console = Console()
     while True:
@@ -20,7 +40,7 @@ def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
 [bold green]1.[/bold green] Barang 
 [bold green]2.[/bold green] Karyawan 
 [bold green]3.[/bold green] Supplier 
-[bold green]4.[/bold green] Peminjam 
+[bold green]4.[/bold green] Pembeli 
 [bold green]5.[/bold green] Tambah Pengguna 
 [bold green]6.[/bold green] Laporan 
 [bold green]7.[/bold green] Keluar App
@@ -34,7 +54,7 @@ def main_menu(item_manager: ItemsManager, userManager:UserManager) -> None:
         elif pilihan == "3":
             menu_supplier(listDataUser=userManager)
         elif pilihan == "4":
-            menu_peminjam(listDataUser=userManager)
+            menu_pembeli(listDataUser=userManager)
         elif pilihan == "5":
             menu_registrasi(userManager)
         elif pilihan == "6":
@@ -66,24 +86,52 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
         choice = input("Pilih opsi: ")
 
         if choice == '1':
-            name = input("Masukkan nama barang: ")
+            console.print("[bold yellow]⚠️ Semua field wajib diisi![/bold yellow]")
+            
+            name = validate_input("Masukkan nama barang: ")
             categories = item_manager.get_all_categories()
             
-            # Menampilkan tabel
+            if not categories:
+                console.print("[bold red]❌ Tidak ada kategori tersedia. Tambahkan kategori terlebih dahulu![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+            
             Util.printTable("daftar items", item_manager, "categories")
             
+            category_id = validate_input("Masukkan ID kategori: ")
+            category_name = categories.get(category_id)
             
-            category_id = input("Masukkan ID kategori: ")
-            category_name = categories.get(category_id, "Kategori tidak valid.")
+            if not category_name:
+                console.print("[bold red]❌ ID kategori tidak valid![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
             
-            stock = int(input("Masukkan jumlah stok: "))
-            price = int(input("Masukkan harga: "))
-            sell_price = int(input("Masukkan harga jual: "))
+            stock = validate_input("Masukkan jumlah stok: ", input_type="int")
+            price = validate_input("Masukkan harga: ", input_type="int")
+            sell_price = validate_input("Masukkan harga jual: ", input_type="int")
             entrydate = datetime.now().isoformat()
-            desc = input("Masukkan deskripsi barang: ")
+            desc = validate_input("Masukkan deskripsi barang: ")
+            
+            suppliers = listDataUser.getDataByRole("supplier")
+            if not suppliers:
+                console.print("[bold red]❌ Tidak ada supplier tersedia. Tambahkan supplier terlebih dahulu![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar supplier", listDataUser, "supplier")
-            supplier = input("Masukkan supplier: ")
-            status = input("Masukkan status (aktif/non-aktif): ")
+            supplier = validate_input("Masukkan username supplier: ")
+            
+            supplier_user = listDataUser.findUser(supplier)
+            if not supplier_user or supplier_user.role != "supplier":
+                console.print("[bold red]❌ Supplier tidak ditemukan![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+            
+            while True:
+                status = validate_input("Masukkan status (aktif/non-aktif): ").lower()
+                if status in ["aktif", "non-aktif"]:
+                    break
+                console.print("[bold red]❌ Status harus 'aktif' atau 'non-aktif'![/bold red]")
 
             item_data = {
                 "name": name,
@@ -99,68 +147,136 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
 
             item_manager.add_item(name, item_data)
             Util.createTransaction(name, 0, stock, supplier, price, transaction, "Penambahan barang baru")
-            print("Barang berhasil ditambahkan.")
+            console.print(f"[green]✅ Barang '{name}' berhasil ditambahkan.[/green]")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '2':
+            items = item_manager.get_all_items()
+            if not items:
+                console.print("[bold red]❌ Tidak ada barang untuk diedit![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar item", item_manager, "items")
-            item_name = Prompt.ask("Masukkan nama barang yang ingin diedit: ")
-            item = item_manager.get_item(item_name)
+            
+            while True:
+                item_name = input("Masukkan nama barang yang ingin diedit: ").strip()
+                if not item_name:
+                    console.print("[bold red]❌ Nama barang tidak boleh kosong![/bold red]")
+                    continue
+                break
+            
+            item = None
+            original_item_name = None
+            
+            if item_name in items:
+                item = items[item_name]
+                original_item_name = item_name
+            else:
+                for key, value in items.items():
+                    if key.lower() == item_name.lower():
+                        item = value
+                        original_item_name = key
+                        break
 
             if item:
                 stok_awal = int(item['stock'])
                 
+                console.print(f"[bold green]✅ Ditemukan barang: {original_item_name}[/bold green]")
+                console.print("[yellow]⚠️ Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
+                console.print("[bold cyan]💡 Nama barang tidak boleh kosong![/bold cyan]")
+                
+                while True:
+                    new_name = input(f"Nama [{item['name']}]: ").strip()
+                    if new_name == "":
+                        new_name = item['name']
+                        break
+                    elif new_name:
+                        break
+                    else:
+                        console.print("[bold red]❌ Nama barang tidak boleh kosong![/bold red]")
+                        continue
+                
                 fields = {
-                    "name": f"Nama [{item['name']}]",
-                    "category": f"Kategori [{item['category']}]",
-                    "stock": f"Stok [{item['stock']}]",
-                    "price": f"Harga [{item['price']}]",
-                    "sellPrice": f"Harga Jual [{item['sellPrice']}]",
-                    "desc": f"Deskripsi [{item['desc']}]",
-                    "supplier": f"Supplier [{item['supplier']}]",
-                    "status": f"Status [{item['status']}]"
+                    "name": new_name,
+                    "category": input(f"Kategori [{item['category']}]: ").strip() or item['category'],
+                    "stock": input(f"Stok [{item['stock']}]: ").strip() or item['stock'],
+                    "price": input(f"Harga [{item['price']}]: ").strip() or item['price'],
+                    "sellPrice": input(f"Harga Jual [{item['sellPrice']}]: ").strip() or item['sellPrice'],
+                    "desc": input(f"Deskripsi [{item['desc']}]: ").strip() or item['desc'],
+                    "supplier": input(f"Supplier [{item['supplier']}]: ").strip() or item['supplier'],
+                    "status": input(f"Status [{item['status']}]: ").strip() or item['status']
                 }
-                updated_item:dict = Util.editAllData(item_name, item_manager, fields)
-                console.print("[bold green]Barang berhasil diperbarui.[/bold green]")
-                input()
+                
+                try:
+                    fields["stock"] = int(fields["stock"]) if str(fields["stock"]).isdigit() else int(item['stock'])
+                    fields["price"] = float(fields["price"]) if str(fields["price"]).replace('.', '').isdigit() else float(item['price'])
+                    fields["sellPrice"] = float(fields["sellPrice"]) if str(fields["sellPrice"]).replace('.', '').isdigit() else float(item['sellPrice'])
+                except ValueError:
+                    console.print("[bold red]❌ Format angka tidak valid, menggunakan nilai lama.[/bold red]")
+                    fields["stock"] = int(item['stock'])
+                    fields["price"] = float(item['price'])
+                    fields["sellPrice"] = float(item['sellPrice'])
+                
+                updated_item = item_manager.update_item(original_item_name, fields)
+                console.print("[bold green]✅ Barang berhasil diperbarui.[/bold green]")
 
-                # Cek perubahan stok
-                stok_baru = int(updated_item["stock"])
-                input(f"{stok_baru}")
+                stok_baru = int(fields["stock"])
                 selisih = stok_baru - stok_awal
 
                 if selisih != 0:
-                    Util.createTransaction(updated_item["name"], stok_awal, stok_baru, updated_item["supplier"], updated_item["price"], transaction)
+                    Util.createTransaction(fields["name"], stok_awal, stok_baru, fields["supplier"], fields["price"], transaction)
 
             else:
-                console.print("[bold red]Barang tidak ditemukan.[/bold red]")
-                Prompt.ask("[bold yellow] tekan enter untuk kembali[/bold yellow]")
-
+                console.print(f"[bold red]❌ Barang '{item_name}' tidak ditemukan.[/bold red]")
+                
+            input("Tekan Enter untuk kembali...")
 
         elif choice == '3':
             items = item_manager.get_all_items()
             if items:
-                table = Table(title="Daftar Barang untuk Hapus")
+                table = Table(title="Daftar Barang untuk Dihapus")
                 table.add_column("Nama Barang", style="cyan", justify="center")
                 table.add_column("Kategori", style="magenta")
                 table.add_column("Stok", style="green")
-                
+
                 for item_name, item in items.items():
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
 
-                item_name = input("Masukkan nama barang yang ingin dihapus: ")
-                item_manager.delete_item(item_name)
-                print("Barang berhasil dihapus.")
+                input_name = validate_input("Masukkan nama barang yang ingin dihapus: ").strip().lower()
+
+                matched_item_name = None
+                for item_name in items:
+                    if item_name.lower() == input_name:
+                        matched_item_name = item_name
+                        break
+
+                if matched_item_name:
+                    while True:
+                        confirm = input(f"Apakah Anda yakin ingin menghapus '{matched_item_name}'? (y/n): ").strip().lower()
+                        if confirm in ['y', 'n']:
+                            break
+                        console.print("[bold red]❌ Input harus 'y' atau 'n'![/bold red]")
+                    
+                    if confirm == 'y':
+                        item_manager.delete_item(matched_item_name)
+                        console.print(f"[green]✅ Barang '{matched_item_name}' berhasil dihapus.[/green]")
+                    else:
+                        console.print("[yellow]⚠️ Penghapusan dibatalkan.[/yellow]")
+                else:
+                    console.print(f"[red]❌ Barang dengan nama '{input_name}' tidak ditemukan.[/red]")
             else:
-                print("Tidak ada barang untuk dihapus.")
+                console.print("[yellow]⚠️ Tidak ada barang untuk dihapus.[/yellow]")
+            input("Tekan Enter untuk kembali...")
 
         elif choice == '4':
             Util.printTable("daftar items", item_manager, "items")
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '5':
-            search_term = Prompt.ask("[bold cyan]Masukkan nama barang yang ingin dicari[/bold cyan]")
+            search_term = validate_input("Masukkan nama barang yang ingin dicari: ").strip().lower()
             items = item_manager.search_item(search_term)
             if items:
                 table = Table(title="Hasil Pencarian Barang")
@@ -172,37 +288,58 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
                     table.add_row(item_name, item['category'], str(item['stock']))
 
                 console.print(table)
-                Prompt.ask("[bold yellow]Tekan enter untuk lanjut[/bold yellow]")
             else:
-                console.print("[bold red]Barang tidak ditemukan.[/bold red]")
-                Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+                console.print("[bold red]❌ Barang tidak ditemukan.[/bold red]")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '6':
-            console.print("[bold cyan]Sort By:[/bold cyan]")
-            console.print("1. Nama\n2. Harga\n3. Stok")
-            sort_choice = Prompt.ask("Pilih opsi untuk sorting", choices=["1", "2", "3"], default="1")
-
-            if sort_choice == '1':
-                sorted_items = item_manager.get_sorted_items(by="name")
-            elif sort_choice == '2':
-                sorted_items = item_manager.get_sorted_items(by="price")
-            elif sort_choice == '3':
-                sorted_items = item_manager.get_sorted_items(by="stock")
-
-            if sorted_items:
-                table = Table(title="Barang yang Disortir")
-                table.add_column("Nama Barang", style="cyan", justify="center")
-                table.add_column("Kategori", style="magenta")
-                table.add_column("Stok", style="green", justify="right")
-
-                for item_name, item in sorted_items:
-                    table.add_row(item_name, item["category"], str(item["stock"]))
-
-                console.print(table)
-            else:
-                console.print("[bold red]Tidak ada barang.[/bold red]")
-
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+            while True:  
+                console.print("[bold cyan]Menu Sorting Barang[/bold cyan]")
+                console.print("""
+        [bold green]1.[/bold green] Sort berdasarkan Nama (A-Z)
+        [bold green]2.[/bold green] Sort berdasarkan Harga (Termurah)
+        [bold green]3.[/bold green] Sort berdasarkan Stok (Terkecil)
+        [bold green]4.[/bold green] Kembali ke Menu Utama
+        """)
+                
+                sort_choice = Prompt.ask("Pilih opsi untuk sorting", choices=["1", "2", "3", "4"], default="1")
+                
+                if sort_choice == '4':
+                    break  
+                
+                sorted_items = None
+                sort_title = ""
+                
+                if sort_choice == '1':
+                    sorted_items = item_manager.get_sorted_items(by="name")
+                    sort_title = "Barang Diurutkan berdasarkan Nama (A-Z)"
+                elif sort_choice == '2':
+                    sorted_items = item_manager.get_sorted_items(by="price")
+                    sort_title = "Barang Diurutkan berdasarkan Harga (Termurah)"
+                elif sort_choice == '3':
+                    sorted_items = item_manager.get_sorted_items(by="stock")
+                    sort_title = "Barang Diurutkan berdasarkan Stok (Terkecil)"
+                
+                if sorted_items:
+                    table = Table(title=sort_title)
+                    table.add_column("Nama Barang", style="cyan", justify="center")
+                    table.add_column("Kategori", style="magenta")
+                    table.add_column("Stok", style="green", justify="right")
+                    table.add_column("Harga", style="yellow", justify="right")
+                    
+                    for item_name, item in sorted_items:
+                        table.add_row(
+                            item_name, 
+                            item["category"], 
+                            str(item["stock"]),
+                            f"Rp {item['price']:,}"
+                        )
+                    
+                    console.print(table)
+                else:
+                    console.print("[bold red]❌ Tidak ada barang untuk diurutkan.[/bold red]")
+                
+                input("Tekan Enter untuk kembali ke menu sorting...")
 
         elif choice == '7':
             menu_kategori(item_manager)
@@ -211,7 +348,7 @@ def menu_barang(listDataUser:UserManager, item_manager:ItemsManager):
             break
 
         else:
-            print("Pilihan tidak valid.")
+            print("❌ Pilihan tidak valid.")
             
 
 def menu_kategori(item_manager):
@@ -219,7 +356,7 @@ def menu_kategori(item_manager):
     
     while True:
         console.clear()
-        console.print("[bold cyan]Menu Kategori Barang[/bold cyan]", style="bold underline")
+        console.print(Panel.fit("[bold cyan]Menu KategoriBarang[/bold cyan]"))
         console.print("""
 1. Lihat Daftar Kategori Barang
 2. Tambah Kategori Barang
@@ -232,37 +369,78 @@ def menu_kategori(item_manager):
 
         if choice == '1':
             Util.printTable("daftar items", item_manager, "categories")
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '2':
-            category_name = input("Masukkan nama kategori baru: ")
-            item_manager.add_category(category_name)
-            console.print("[bold green]Kategori berhasil ditambahkan.[/bold green]")
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+            category_name = validate_input("Masukkan nama kategori baru: ")
+
+            if category_name in item_manager.get_all_categories().values():
+                console.print(f"[bold red]❌ Kategori '{category_name}' sudah ada.[/bold red]")
+            else:
+                item_manager.add_category(category_name)
+                console.print(f"[bold green]✅ Kategori '{category_name}' berhasil ditambahkan.[/bold green]")
+
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '3':
+            categories = item_manager.get_all_categories()
+            if not categories:
+                console.print("[bold red]❌ Tidak ada kategori untuk diedit![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar items", item_manager, "categories")
 
-            category_id = input("Masukkan ID kategori yang ingin diedit: ")
-            category_name = input("Masukkan nama kategori baru: ")
-            item_manager.edit_category(category_id, category_name)
-            console.print("[bold yellow]Kategori berhasil diperbarui.[/bold yellow]")
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
-
+            category_id = validate_input("Masukkan ID kategori yang ingin diedit: ")
+            
+            if category_id not in categories:
+                console.print("[bold red]❌ ID kategori tidak ditemukan![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+            
+            category_name = validate_input("Masukkan nama kategori baru: ")
+            
+            if category_name in categories.values():
+                console.print(f"[bold red]❌ Kategori '{category_name}' sudah ada.[/bold red]")
+            else:
+                item_manager.edit_category(category_id, category_name)
+                console.print("[bold green]✅ Kategori berhasil diperbarui.[/bold green]")
+            
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == '4':
+            categories = item_manager.get_all_categories()
+            if not categories:
+                console.print("[bold red]❌ Tidak ada kategori untuk dihapus![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar items", item_manager, "categories")
 
-            category_id = input("Masukkan ID kategori yang ingin dihapus: ")
-            item_manager.delete_category(category_id)
-            console.print("[bold red]Kategori berhasil dihapus.[/bold red]")
-            Prompt.ask("[bold yellow] tekan enter untuk lanjut[/bold yellow]")
+            category_id = validate_input("Masukkan ID kategori yang ingin dihapus: ")
+            
+            if category_id not in categories:
+                console.print("[bold red]❌ ID kategori tidak ditemukan![/bold red]")
+            else:
+                while True:
+                    confirm = input(f"Apakah Anda yakin ingin menghapus kategori '{categories[category_id]}'? (y/n): ").strip().lower()
+                    if confirm in ['y', 'n']:
+                        break
+                    console.print("[bold red]❌ Input harus 'y' atau 'n'![/bold red]")
+                
+                if confirm == 'y':
+                    item_manager.delete_category(category_id)
+                    console.print("[bold green]✅ Kategori berhasil dihapus.[/bold green]")
+                else:
+                    console.print("[yellow]⚠️ Penghapusan dibatalkan.[/yellow]")
+            
+            input("Tekan Enter untuk lanjut...")
             
         elif choice == '5':
             break
 
         else:
-            console.print("[bold red]Pilihan tidak valid.[/bold red]")
+            console.print("[bold red]❌ Pilihan tidak valid.[/bold red]")
 
         
 def menu_karyawan(listDataUser: UserManager):
@@ -279,14 +457,19 @@ def menu_karyawan(listDataUser: UserManager):
         choice = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
 
         if choice == "1":
+            employees = listDataUser.getDataByRole("employee")
+            if not employees:
+                console.print("[bold red]❌ Tidak ada karyawan untuk diedit![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar karyawan", listDataUser, "employee")
 
-
-            tempUsername = Prompt.ask("Masukkan username yang ingin diedit: ")
+            tempUsername = validate_input("Masukkan username yang ingin diedit: ")
             user = listDataUser.findUser(tempUsername)
 
             if user and user.role == "employee":
-                console.print("[yellow]Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
+                console.print("[yellow]⚠️ Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
 
                 fields = {
                     "username": f"Username baru [{user.username}]",
@@ -298,33 +481,48 @@ def menu_karyawan(listDataUser: UserManager):
                 Util.editAllData(tempUsername, listDataUser, fields)
                 console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
             else:
-                console.print("[red]Username tidak ditemukan atau bukan karyawan![/red]")
+                console.print("[red]❌ Username tidak ditemukan atau bukan karyawan![/red]")
 
-            input("Tekan ENTER untuk lanjut...")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == "2":
-            # Tampilkan semua employee
+            employees = listDataUser.getDataByRole("employee")
+            if not employees:
+                console.print("[bold red]❌ Tidak ada karyawan untuk dihapus![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar karyawan", listDataUser, "employee")
             
-            tempUsername = Prompt.ask("Masukkan username yang ingin dihapus: ")
+            tempUsername = validate_input("Masukkan username yang ingin dihapus: ")
             user = listDataUser.findUser(tempUsername)
+            
             if user and user.role == "employee":
-                listDataUser.deleteData(tempUsername)
-                console.print("[green]Data karyawan berhasil dihapus.[/green]")
+                while True:
+                    confirm = input(f"Apakah Anda yakin ingin menghapus karyawan '{user.name}'? (y/n): ").strip().lower()
+                    if confirm in ['y', 'n']:
+                        break
+                    console.print("[bold red]❌ Input harus 'y' atau 'n'![/bold red]")
+                
+                if confirm == 'y':
+                    listDataUser.deleteData(tempUsername)
+                    console.print("[green]✅ Data karyawan berhasil dihapus.[/green]")
+                else:
+                    console.print("[yellow]⚠️ Penghapusan dibatalkan.[/yellow]")
             else:
-                console.print("[red]Username tidak ditemukan atau bukan karyawan![/red]")
-            input("Tekan ENTER untuk lanjut...")
+                console.print("[red]❌ Username tidak ditemukan atau bukan karyawan![/red]")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == "3":
             Util.printTable("daftar karyawan", listDataUser, "employee")
-            input("Tekan ENTER untuk lanjut...")
+            input("Tekan Enter untuk lanjut...")
 
         elif choice == "4":
             break
 
         else:
-            console.print("[red]Pilihan tidak valid![/red]")
-            input("Tekan ENTER untuk lanjut...")
+            console.print("[red]❌ Pilihan tidak valid![/red]")
+            input("Tekan Enter untuk lanjut...")
 
 def menu_supplier(listDataUser: UserManager):
     console = Console()
@@ -343,12 +541,19 @@ def menu_supplier(listDataUser: UserManager):
         p = Prompt.ask("[green]Pilih menu[/green]")
 
         if p == "1":
+            suppliers = listDataUser.getDataByRole("supplier")
+            if not suppliers:
+                console.print("[bold red]❌ Tidak ada supplier untuk diedit![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar supplier", listDataUser, "supplier")
             
-            username = Prompt.ask("Masukkan username supplier yang ingin diedit")
+            username = validate_input("Masukkan username supplier yang ingin diedit: ")
             supplier = listDataUser.findUser(username)
+            
             if supplier and supplier.role == "supplier":
-                console.print("[yellow]Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
+                console.print("[yellow]⚠️ Kosongkan input jika tidak ingin mengubah field tersebut.[/yellow]")
 
                 fields = {
                     "username": f"Username baru [{supplier.username}]",
@@ -358,19 +563,35 @@ def menu_supplier(listDataUser: UserManager):
                 }
 
                 Util.editAllData(username, listDataUser, fields)
-                console.print("[green]✅ Data karyawan berhasil diperbarui.[/green]")
+                console.print("[green]✅ Data supplier berhasil diperbarui.[/green]")
             else:
                 console.print("[red]❌ Supplier tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
 
         elif p == "2":
+            suppliers = listDataUser.getDataByRole("supplier")
+            if not suppliers:
+                console.print("[bold red]❌ Tidak ada supplier untuk dihapus![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar supplier", listDataUser, "supplier")
             
-            username = Prompt.ask("Masukkan username supplier yang akan dihapus")
+            username = validate_input("Masukkan username supplier yang akan dihapus: ")
             user = listDataUser.findUser(username)
+            
             if user and user.role == "supplier":
-                listDataUser.deleteData(username)
-                console.print("[green]Supplier berhasil dihapus.[/green]")
+                while True:
+                    confirm = input(f"Apakah Anda yakin ingin menghapus supplier '{user.name}'? (y/n): ").strip().lower()
+                    if confirm in ['y', 'n']:
+                        break
+                    console.print("[bold red]❌ Input harus 'y' atau 'n'![/bold red]")
+                
+                if confirm == 'y':
+                    listDataUser.deleteData(username)
+                    console.print("[green]✅ Supplier berhasil dihapus.[/green]")
+                else:
+                    console.print("[yellow]⚠️ Penghapusan dibatalkan.[/yellow]")
             else:
                 console.print("[red]❌ Supplier tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
@@ -380,21 +601,33 @@ def menu_supplier(listDataUser: UserManager):
             input("Tekan Enter untuk lanjut...")
 
         elif p == "4":
+            suppliers = listDataUser.getDataByRole("supplier")
+            if not suppliers:
+                console.print("[bold red]❌ Tidak ada supplier tersedia![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar supplier", listDataUser, "supplier")
             
-            username = Prompt.ask("Masukkan username supplier")
+            username = validate_input("Masukkan username supplier: ")
             user = listDataUser.findUser(username)
+            
             if user and user.role == "supplier":
                 console.print(f"[cyan]Username:[/cyan] {user.username}")
                 console.print(f"[green]Nama:[/green] {user.name}")
                 console.print(f"[blue]Email:[/blue] {user.email}")
                 console.print(f"[magenta]Role:[/magenta] {user.role}")
             else:
-                console.print("[red]Supplier tidak ditemukan![/red]")
+                console.print("[red]❌ Supplier tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
 
         elif p == "5":
             suppliers = listDataUser.getDataByRole("supplier")
+            if not suppliers:
+                console.print("[bold red]❌ Tidak ada supplier untuk disorting![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             sorted_data = dict(sorted(suppliers.items()))
             table = Table(title="Supplier Tersorting")
             table.add_column("Username", style="cyan")
@@ -409,55 +642,77 @@ def menu_supplier(listDataUser: UserManager):
             break
 
         else:
-            console.print("[red]Pilihan tidak valid![/red]")
+            console.print("[red]❌ Pilihan tidak valid![/red]")
             input("Tekan Enter untuk lanjut...")
             
-def menu_peminjam(listDataUser: UserManager):
+def menu_pembeli(listDataUser: UserManager):
     console = Console()
     while True:
         console.clear()
-        console.print(Panel.fit("[bold cyan]Menu Peminjam[/bold cyan]"))
+        console.print(Panel.fit("[bold cyan]Menu Pembeli[/bold cyan]"))
         console.print("""
-1. Edit Peminjam
-2. Hapus Peminjam
-3. Lihat Daftar Peminjam
-4. Cari Data Peminjam
-5. Sorting Data Peminjam
+1. Edit Pembeli
+2. Hapus Pembeli
+3. Lihat Daftar Pembeli
+4. Cari Data Pembeli
+5. Sorting Data Pembeli
 6. Kembali
 """)
         p = Prompt.ask("[chartreuse1]Pilih menu: [/chartreuse1]")
 
         if p == "1":
+            users = listDataUser.getDataByRole("user")
+            if not users:
+                console.print("[bold red]❌ Tidak ada peminjam untuk diedit![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar peminjam", listDataUser, "user")
             
-            username = Prompt.ask("Masukkan username peminjam yang ingin diedit")
+            username = validate_input("Masukkan username peminjam yang ingin diedit: ")
             peminjam = listDataUser.findUser(username)
+            
             if peminjam and peminjam.role == "user":
-                console.print("[yellow]Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
+                console.print("[yellow]⚠️ Kosongkan input jika tidak ingin mengubah nilai tersebut[/yellow]")
                 fields = {
-                    "username": f"Username baru [{user.username}]",
-                    "nama": f"Nama baru [{user.name}]",
-                    "email": f"Email baru [{user.email}]",
-                    "password": f"Password baru [{user.password}]"
+                    "username": f"Username baru [{peminjam.username}]",
+                    "nama": f"Nama baru [{peminjam.name}]",
+                    "email": f"Email baru [{peminjam.email}]",
+                    "password": f"Password baru [{peminjam.password}]"
                 }
                 
                 Util.editAllData(username, listDataUser, fields)
-
                 console.print("[green]✅ Data peminjam berhasil diubah[/green]")
             else:
-                console.print("[red]❌ Peminjam tidak ditemukan![/red]")
+                console.print("[red]❌ Pembeli tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
 
         elif p == "2":
+            users = listDataUser.getDataByRole("user")
+            if not users:
+                console.print("[bold red]❌ Tidak ada peminjam untuk dihapus![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar peminjam", listDataUser, "user")
             
-            username = Prompt.ask("Masukkan username peminjam yang akan dihapus")
+            username = validate_input("Masukkan username peminjam yang akan dihapus: ")
             user = listDataUser.findUser(username)
+            
             if user and user.role == "user":
-                listDataUser.deleteData(username)
-                console.print("[green]Peminjam berhasil dihapus.[/green]")
+                while True:
+                    confirm = input(f"Apakah Anda yakin ingin menghapus peminjam '{user.name}'? (y/n): ").strip().lower()
+                    if confirm in ['y', 'n']:
+                        break
+                    console.print("[bold red]❌ Input harus 'y' atau 'n'![/bold red]")
+                
+                if confirm == 'y':
+                    listDataUser.deleteData(username)
+                    console.print("[green]✅ Pembeli berhasil dihapus.[/green]")
+                else:
+                    console.print("[yellow]⚠️ Penghapusan dibatalkan.[/yellow]")
             else:
-                console.print("[red]❌ Peminjam tidak ditemukan![/red]")
+                console.print("[red]❌ Pembeli tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
 
         elif p == "3":
@@ -465,23 +720,30 @@ def menu_peminjam(listDataUser: UserManager):
             input("Tekan Enter untuk lanjut...")
 
         elif p == "4":
+            users = listDataUser.getDataByRole("user")
+            if not users:
+                console.print("[bold red]❌ Tidak ada peminjam tersedia![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                continue
+                
             Util.printTable("daftar peminjam", listDataUser, "user")
             
-            username = Prompt.ask("Masukkan username peminjam")
+            username = validate_input("Masukkan username peminjam: ")
             user = listDataUser.findUser(username)
+            
             if user and user.role == "user":
                 console.print(f"[cyan]Username:[/cyan] {user.username}")
                 console.print(f"[green]Nama:[/green] {user.name}")
                 console.print(f"[blue]Email:[/blue] {user.email}")
                 console.print(f"[magenta]Role:[/magenta] {user.role}")
             else:
-                console.print("[red]Peminjam tidak ditemukan![/red]")
+                console.print("[red]❌ Pembeli tidak ditemukan![/red]")
             input("Tekan Enter untuk lanjut...")
 
         elif p == "5":
             peminjam = listDataUser.getDataByRole("user")
             sorted_data = dict(sorted(peminjam.items()))
-            table = Table(title="Peminjam Tersorting")
+            table = Table(title="Pembeli Tersorting")
             table.add_column("Username", style="cyan")
             table.add_column("Name", style="green")
             table.add_column("Email", style="blue")
@@ -501,14 +763,35 @@ def menu_registrasi(userManager: UserManager):
     console = Console()
     console.clear()
     console.print(Panel.fit("[bold cyan]Registrasi Pengguna[/bold cyan]"))
-    
-    name = Prompt.ask("Masukkan nama")
-    username = Prompt.ask("Masukkan username")
-    email = Prompt.ask("Masukkan email")
-    password = Prompt.ask("Masukkan password")
-    role = Prompt.ask("Masukkan role (admin/employee/supplier/pembeli)", choices=["admin", "employee", "supplier", "pembeli"])
 
-    # ubah pembeli menjadi user
+    while True:
+        name = Prompt.ask("Masukkan nama").strip()
+        if not name:
+            console.print("[red]Nama tidak boleh kosong![/red]")
+            continue
+
+        username = Prompt.ask("Masukkan username").strip()
+        if not username:
+            console.print("[red]Username tidak boleh kosong![/red]")
+            continue
+
+        email = Prompt.ask("Masukkan email").strip()
+        if not email:
+            console.print("[red]Email tidak boleh kosong![/red]")
+            continue
+
+        password = Prompt.ask("Masukkan password").strip()
+        if not password:
+            console.print("[red]Password tidak boleh kosong![/red]")
+            continue
+
+        role = Prompt.ask("Masukkan role (admin/employee/supplier/pembeli)", choices=["admin", "employee", "supplier", "pembeli"]).strip()
+        if not role:
+            console.print("[red]Role tidak boleh kosong![/red]")
+            continue
+
+        break 
+
     if role == "pembeli":
         role = "user"
 
@@ -527,6 +810,7 @@ def menu_registrasi(userManager: UserManager):
         console.print("[red]❌ Gagal menambahkan pengguna. Username mungkin sudah digunakan atau role tidak valid.[/red]")
 
     input("Tekan Enter untuk kembali...")
+
     
     
 def menu_laporan():
@@ -548,8 +832,10 @@ def menu_laporan():
             input()
         elif p == "3":
             break
+        else:
+            console.print("[red]Pilihan tidak valid![/red]")
+            input("Tekan Enter untuk lanjut...")
 
-# Eksekusi utama
 if __name__ == "__main__":
     userManager = UserManager("path/ke/file_user.json")
     itemManager = ItemsManager("path/ke/barang.json")

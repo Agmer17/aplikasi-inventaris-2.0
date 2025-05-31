@@ -5,12 +5,6 @@
         "password": "12345",
         "role": "admin"
     },
-    "dudung": {
-        "name": "dadang",
-        "email": "supplier1@gmail.com",
-        "password": "12345",
-        "role": "supplier"
-    },
     "rimuru_sama": {
         "name": "Rimuru Tempest",
         "email": "rimuru@example.com",
@@ -41,13 +35,7 @@
         "password": "12345",
         "role": "admin"
     },
-    "aretta": {
-        "name": "aretta",
-        "email": "aretta@gmail.com",
-        "password": "12345",
-        "role": "user"
-    },
-      "arettaa": {
+    "arettaa": {
         "name": "Aretta Dwi Hapsari",
         "email": "aretta@gmail.com",
         "password": "12345",
@@ -71,12 +59,6 @@
         "password": "12345",
         "role": "admin"
     },
-    "gitsune": {
-        "name": "Gitsune",
-        "email": "gitsune@example.com",
-        "password": "kitsunepass",
-        "role": "supplier"
-    },
     "hiuraAja": {
         "name": "hiura",
         "email": "hiura@gmail.com",
@@ -94,5 +76,17 @@
         "email": "raid@gmail.cok",
         "password": "1234",
         "role": "employee"
+    },
+    "dudung": {
+        "name": "dudung",
+        "email": "supplier1@gmail.com",
+        "password": "12345",
+        "role": "supplier"
+    },
+    "aretta": {
+        "name": "aretta",
+        "email": "aretta@gmail.com",
+        "password": "12345",
+        "role": "user"
     }
 }

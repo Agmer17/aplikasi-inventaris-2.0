@@ -12,6 +12,60 @@ import os
 console = Console()
 transaction = TransactionManager()
 
+def validate_input(prompt_text, allow_empty=False, input_type="string", min_value=None, max_value=None):
+    """
+    Fungsi untuk memvalidasi input dari pengguna
+    
+    Args:
+        prompt_text (str): Teks prompt yang ditampilkan
+        allow_empty (bool): Apakah input kosong diperbolehkan
+        input_type (str): Tipe input ("string", "int", "float")
+        min_value (int/float): Nilai minimum (untuk angka)
+        max_value (int/float): Nilai maksimum (untuk angka)
+    Returns:
+        str/int/float: Input yang sudah divalidasi
+    """
+    while True:
+        user_input = input(prompt_text).strip()
+        
+        if not allow_empty and not user_input:
+            console.print("[bold red]❌ Input tidak boleh kosong![/bold red]")
+            continue
+        
+        if allow_empty and not user_input:
+            return user_input
+        
+        if input_type == "int":
+            try:
+                value = int(user_input)
+                if min_value is not None and value < min_value:
+                    console.print(f"[bold red]❌ Nilai harus minimal {min_value}![/bold red]")
+                    continue
+                if max_value is not None and value > max_value:
+                    console.print(f"[bold red]❌ Nilai harus maksimal {max_value}![/bold red]")
+                    continue
+                return value
+            except ValueError:
+                console.print("[bold red]❌ Input harus berupa angka![/bold red]")
+                continue
+        
+        elif input_type == "float":
+            try:
+                value = float(user_input)
+                if min_value is not None and value < min_value:
+                    console.print(f"[bold red]❌ Nilai harus minimal {min_value}![/bold red]")
+                    continue
+                if max_value is not None and value > max_value:
+                    console.print(f"[bold red]❌ Nilai harus maksimal {max_value}![/bold red]")
+                    continue
+                return value
+            except ValueError:
+                console.print("[bold red]❌ Input harus berupa angka desimal![/bold red]")
+                continue
+        
+        return user_input
+
+
 def user_main_menu(item_manager: ItemsManager, userManager: UserManager, transaction_manager: TransactionManager, username):
     while True:
         console.clear()
@@ -25,23 +79,21 @@ def user_main_menu(item_manager: ItemsManager, userManager: UserManager, transac
 [bold green]6.[/bold green] Keluar dari Aplikasi
 """)
 
-        pilihan = input("Masukkan pilihan (1-6): ")
+        pilihan = validate_input("Masukkan pilihan (1-6): ", input_type="int", min_value=1, max_value=6)
 
-        if pilihan == "1":
+        if pilihan == 1:
             menu_daftar_barang(item_manager, transaction_manager)
-        elif pilihan == "2":
+        elif pilihan == 2:
             menu_beli_barang(transaction_manager, item_manager, username)
-        elif pilihan == "3":
+        elif pilihan == 3:
             menu_barang_dibeli(transaction_manager, username)
-        elif pilihan == "4":
+        elif pilihan == 4:
             menu_cari_barang(item_manager, transaction_manager)
-        elif pilihan == "5":
+        elif pilihan == 5:
             menu_sorting_barang(item_manager, transaction_manager)
-        elif pilihan == "6":
+        elif pilihan == 6:
             console.print("[bold red]Keluar dari aplikasi...[/bold red]")
             break
-        else:
-            console.print("[bold red]Pilihan tidak valid![/bold red]")
 
 
 def menu_daftar_barang(item_manager, transaction_manager):
@@ -53,7 +105,6 @@ def menu_daftar_barang(item_manager, transaction_manager):
         table.add_column("Stok Tersedia", style="green")
         table.add_column("Harga", style="yellow")
 
-        # Hitung stok berdasarkan transaksi
         stock_calculation = transaction_manager.calculate_stock()
 
         for item_name, item in items.items():
@@ -81,10 +132,8 @@ def menu_beli_barang(transaction_manager: TransactionManager, item_manager: Item
         Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
         return
 
-    # Hitung stok berdasarkan transaksi
     stock_calculation = transaction_manager.calculate_stock()
     
-    # Filter barang yang masih ada stoknya
     available_items = []
     for item_name, item in items.items():
         stok_tersedia = stock_calculation.get(item_name, int(item['stock']))
@@ -114,38 +163,28 @@ def menu_beli_barang(transaction_manager: TransactionManager, item_manager: Item
 
     console.print(table)
 
-    try:
-        pilihan = int(Prompt.ask("Masukkan nomor barang yang ingin dibeli"))
-        if pilihan < 1 or pilihan > len(available_items):
-            console.print("[red]Nomor barang tidak tersedia.[/red]")
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-            return
-        
-        barang = available_items[pilihan - 1]
-        console.print(f"[cyan]Anda memilih: {barang['name']} (Stok: {barang['available_stock']})[/cyan]")
-        
-        jumlah = int(Prompt.ask("Jumlah yang ingin dibeli"))
-        if jumlah <= 0:
-            console.print("[red]Jumlah harus lebih dari 0.[/red]")
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-            return
-            
-    except ValueError:
-        console.print("[red]Input tidak valid. Harap masukkan angka.[/red]")
-        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-        return
+    pilihan = validate_input(
+        "Masukkan nomor barang yang ingin dibeli: ", 
+        input_type="int", 
+        min_value=1, 
+        max_value=len(available_items)
+    )
+    
+    barang = available_items[pilihan - 1]
+    console.print(f"[cyan]Anda memilih: {barang['name']} (Stok: {barang['available_stock']})[/cyan]")
+    
+    jumlah = validate_input(
+        "Jumlah yang ingin dibeli: ", 
+        input_type="int", 
+        min_value=1, 
+        max_value=barang["available_stock"]
+    )
 
-    if jumlah > barang["available_stock"]:
-        console.print(f"[red]Stok tidak cukup. Stok tersedia: {barang['available_stock']}[/red]")
-        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-        return
-
-    # Buat transaksi dengan parameter yang benar
     transaksi = Transaction(
         itemName=barang["name"],
         type="keluar",
         quantity=jumlah,
-        supplier="",  # Kosong untuk transaksi keluar
+        supplier="",  
         pricePerItem=barang["price"],
         customer=username,
         notes="Pembelian oleh user"
@@ -166,7 +205,6 @@ def menu_barang_dibeli(transaction_manager: TransactionManager, username: str):
     console.print("\n[bold blue]-- Riwayat Pembelian Barang Anda --[/bold blue]")
     transaksi = transaction_manager.get_all_transactions()
 
-    # Filter transaksi berdasarkan username dan type "keluar"
     transaksi_user = [t for t in transaksi if t["type"] == "keluar" and t.get("customer") == username]
 
     if not transaksi_user:
@@ -209,11 +247,7 @@ def menu_barang_dibeli(transaction_manager: TransactionManager, username: str):
 def menu_cari_barang(item_manager, transaction_manager):
     console.print("\n[bold green]-- Cari Barang --[/bold green]")
     
-    search_term = Prompt.ask("Masukkan nama barang yang dicari")
-    if not search_term.strip():
-        console.print("[red]Kata kunci pencarian tidak boleh kosong.[/red]")
-        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-        return
+    search_term = validate_input("Masukkan nama barang yang dicari: ", allow_empty=False)
     
     hasil = item_manager.search_item(search_term)
     
@@ -228,7 +262,6 @@ def menu_cari_barang(item_manager, transaction_manager):
     table.add_column("Stok Tersedia", style="green")
     table.add_column("Harga", style="yellow")
     
-    # Hitung stok berdasarkan transaksi
     stock_calculation = transaction_manager.calculate_stock()
     
     for item_name, item in hasil.items():
@@ -256,8 +289,7 @@ def menu_sorting_barang(item_manager, transaction_manager):
     [bold green]5.[/bold green] Urutkan berdasarkan Stok (Terbanyak)
     [bold green]6.[/bold green] Kembali
     """)
-
-        pilihan = Prompt.ask("Pilih sorting (1-6)")
+        pilihan = validate_input("Pilih sorting (1-6): ", input_type="int", min_value=1, max_value=6)
 
         items = item_manager.get_all_items()
         if not items:
@@ -265,31 +297,25 @@ def menu_sorting_barang(item_manager, transaction_manager):
             Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
             return
 
-        # Hitung stok berdasarkan transaksi
         stock_calculation = transaction_manager.calculate_stock()
 
-        if pilihan == "1":
+        if pilihan == 1:
             sorted_items = item_manager.get_sorted_items(by="name", reverse=False)
             title = "Barang Diurutkan berdasarkan Nama (A-Z)"
-        elif pilihan == "2":
+        elif pilihan == 2:
             sorted_items = item_manager.get_sorted_items(by="price", reverse=False)
             title = "Barang Diurutkan berdasarkan Harga (Termurah)"
-        elif pilihan == "3":
+        elif pilihan == 3:
             sorted_items = item_manager.get_sorted_items(by="price", reverse=True)
             title = "Barang Diurutkan berdasarkan Harga (Termahal)"
-        elif pilihan == "4":
+        elif pilihan == 4:
             sorted_items = item_manager.get_sorted_items(by="stock", reverse=False, stock_data=stock_calculation)
             title = "Barang Diurutkan berdasarkan Stok (Terkecil)"
-        elif pilihan == "5":
+        elif pilihan == 5:
             sorted_items = item_manager.get_sorted_items(by="stock", reverse=True, stock_data=stock_calculation)
             title = "Barang Diurutkan berdasarkan Stok (Terbanyak)"
-        elif pilihan == "6":
+        elif pilihan == 6:
             return
-        else:
-            console.print("[red]Pilihan tidak valid.[/red]")
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali ke menu sorting[/bold yellow]")
-            continue  # ulangi menu sorting
-
 
         table = Table(title=title)
         table.add_column("Nama Barang", style="cyan")

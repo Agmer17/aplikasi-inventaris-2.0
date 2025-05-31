@@ -4,20 +4,9 @@
         "2": "alat musik",
         "3": "olahraga",
         "4": "pakaian",
-        "5": "Pangan"
+        "5": "pangan"
     },
     "items": {
-        "laptop asus": {
-            "name": "laptop asus",
-            "category": "elektronik",
-            "stock": 11,
-            "price": 5000000,
-            "sellPrice": 5500000,
-            "entrydate": "2025-05-03T14:24:56.792458",
-            "desc": "laptop keren",
-            "supplier": "dudung",
-            "status": "aktif"
-        },
         "mouse ryzen": {
             "name": "mouse ryzen",
             "category": "elektronik",
@@ -59,6 +48,39 @@
             "sellPrice": 20000,
             "entrydate": "2025-05-18T21:46:32.876865",
             "desc": "spidol",
+            "supplier": "dudung",
+            "status": "aktif"
+        },
+        "laptop msi": {
+            "name": "laptop msi",
+            "category": "elektronik",
+            "stock": 2,
+            "price": 1000000,
+            "sellPrice": 200000,
+            "entrydate": "2025-05-30T16:22:12.988866",
+            "desc": "laptop gaming",
+            "supplier": "dudung",
+            "status": "aktif"
+        },
+        "televisi samsung": {
+            "name": "televisi samsung",
+            "category": "elektronik",
+            "stock": 10,
+            "price": 100000,
+            "sellPrice": 100000,
+            "entrydate": "2025-05-31T13:35:47.267158",
+            "desc": "televisi samsung",
+            "supplier": "dudung",
+            "status": "aktif"
+        },
+        "laptop lenevo yoga": {
+            "name": "laptop lenevo yoga",
+            "category": "elektronik",
+            "stock": 2,
+            "price": 20000.0,
+            "sellPrice": 20000.0,
+            "entrydate": "2025-05-31T14:24:30.463522",
+            "desc": "",
             "supplier": "dudung",
             "status": "aktif"
         }

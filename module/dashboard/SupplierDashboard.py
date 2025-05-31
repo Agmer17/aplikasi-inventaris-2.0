@@ -7,9 +7,59 @@ from module.Manager.UserManager import UserManager
 from module.Manager.TransactionManager import TransactionManager
 from module.items import Item
 from module.User import Supplier
-import datetime
+from datetime import datetime
+from module.transaction import Transaction
 
 console = Console()
+transaction = TransactionManager();
+
+def validate_input(prompt_text, allow_empty=False, input_type="string", choices=None):
+    """
+    Fungsi untuk memvalidasi input dari pengguna
+    
+    Args:
+        prompt_text: Teks prompt untuk user
+        allow_empty: Apakah input boleh kosong
+        input_type: Tipe input ("string", "int", "float")
+        choices: List pilihan valid (untuk validasi pilihan)
+    """
+    while True:
+        user_input = input(prompt_text).strip()
+        
+        if not allow_empty and not user_input:
+            console.print("[bold red]❌ Input tidak boleh kosong![/bold red]")
+            continue
+        
+        if allow_empty and not user_input:
+            return user_input
+            
+        if choices and user_input not in choices:
+            console.print(f"[bold red]❌ Pilihan harus salah satu dari: {', '.join(choices)}[/bold red]")
+            continue
+            
+        if input_type == "int":
+            try:
+                value = int(user_input)
+                if value < 0:
+                    console.print("[bold red]❌ Angka tidak boleh negatif![/bold red]")
+                    continue
+                return value
+            except ValueError:
+                console.print("[bold red]❌ Input harus berupa angka bulat![/bold red]")
+                continue
+        
+        elif input_type == "float":
+            try:
+                value = float(user_input)
+                if value < 0:
+                    console.print("[bold red]❌ Angka tidak boleh negatif![/bold red]")
+                    continue
+                return value
+            except ValueError:
+                console.print("[bold red]❌ Input harus berupa angka![/bold red]")
+                continue
+        
+        return user_input
 
 class SupplierDashboard:
     def __init__(self, supplier_username: str, supplier_name: str):
@@ -23,6 +73,7 @@ class SupplierDashboard:
         self.supplier_username = supplier_username
         self.supplier_name = supplier_name
         self.items_manager = ItemsManager()
+        self.transaction_manager = TransactionManager()  # Inisialisasi di sini
     
     def get_supplier_items(self):
         """
@@ -35,8 +86,6 @@ class SupplierDashboard:
         supplier_items = {}
         
         for item_name, item_data in all_items.items():
-            # Cek apakah supplier dari item ini sama dengan current supplier
-            # Dalam JSON, supplier disimpan sebagai string nama supplier
             item_supplier = item_data.get('supplier', '')
             if item_supplier == self.supplier_username:
                 supplier_items[item_name] = item_data
@@ -53,7 +102,6 @@ class SupplierDashboard:
             console.print("[yellow]Anda belum memiliki barang yang terdaftar dalam sistem.[/yellow]")
             return
         
-        # Buat tabel untuk menampilkan barang
         table = Table(title=f"Daftar Barang - {self.supplier_name}")
         table.add_column("Nama Barang", style="cyan")
         table.add_column("Kategori", style="magenta")
@@ -77,60 +125,77 @@ class SupplierDashboard:
         console.print(table)
     
     def add_item(self):
-        """
-        Menambahkan barang baru dengan supplier saat ini
-        """
         console.print(Panel.fit("[bold green]Tambah Barang Baru[/bold green]"))
-        
+
         try:
-            # Input data barang
-            name = Prompt.ask("Nama barang")
-            
-            # Cek apakah barang sudah ada
-            if self.items_manager.get_item(name):
-                console.print(f"[red]Barang '{name}' sudah ada dalam sistem![/red]")
-                return
-            
-            # Tampilkan kategori yang tersedia
+            while True:
+                name = validate_input("Masukkan nama barang: ", allow_empty=False)
+                if self.items_manager.get_item(name):
+                    console.print(f"[red]❌ Barang '{name}' sudah ada dalam sistem![/red]")
+                    continue
+                break
+
             categories = self.items_manager.get_all_categories()
-            if categories:
-                console.print("\n[cyan]Kategori yang tersedia:[/cyan]")
-                for cat_id, cat_name in categories.items():
-                    console.print(f"{cat_id}. {cat_name}")
-                
-                category_choice = Prompt.ask("Pilih ID kategori atau ketik kategori baru")
-                category = categories.get(category_choice, category_choice)
-            else:
-                category = Prompt.ask("Kategori barang")
-            
-            stock = int(Prompt.ask("Jumlah stok", default="0"))
-            price = float(Prompt.ask("Harga beli"))
-            sell_price = float(Prompt.ask("Harga jual"))
-            desc = Prompt.ask("Deskripsi barang", default="")
-            status = Prompt.ask("Status barang", default="aktif", choices=["aktif", "non-aktif"])
-            
-            # Buat data item baru dengan format yang sesuai JSON
+            if not categories:
+                console.print("[bold red]❌ Tidak ada kategori tersedia.[/bold red]")
+                input("Tekan Enter untuk kembali...")
+                return
+
+            console.print("\n[cyan]Kategori yang tersedia:[/cyan]")
+            for cat_id, cat_name in categories.items():
+                console.print(f"{cat_id}. {cat_name}")
+
+            category_id = validate_input("Masukkan ID kategori: ", allow_empty=False)
+            category_name = categories.get(category_id)
+            if not category_name:
+                console.print("[bold red]❌ ID kategori tidak valid![/bold red]")
+                input("Tekan Enter untuk kembali...")
+                return
+
+            stock = validate_input("Masukkan jumlah stok: ", input_type="int")
+            price = validate_input("Masukkan harga beli: ", input_type="float")
+            sell_price = validate_input("Masukkan harga jual: ", input_type="float")
+            desc = validate_input("Masukkan deskripsi barang (opsional): ", allow_empty=True)
+            status = validate_input("Masukkan status (aktif/non-aktif): ", allow_empty=False, choices=["aktif", "non-aktif"])
+
             item_data = {
                 "name": name,
-                "category": category,
+                "category": category_name,
                 "stock": stock,
                 "price": price,
                 "sellPrice": sell_price,
+                "entrydate": datetime.now().isoformat(),
                 "desc": desc,
                 "supplier": self.supplier_username,
-                "status": status,
-                "entrydate": datetime.datetime.now().isoformat()
+                "status": status
             }
-            
-            # Simpan ke ItemsManager
+
             self.items_manager.add_item(name, item_data)
+            import uuid
+            transaction_obj = Transaction(
+                id=str(uuid.uuid4()),
+                itemName=name,
+                type="masuk",
+                quantity=stock,
+                pricePerItem=price,
+                supplier=self.supplier_username,
+                customer=None,
+                notes="Penambahan barang baru",
+                date=datetime.now().isoformat()
+            )
+
+            self.transaction_manager.add_transaction(transaction_obj)
+
             console.print(f"[green]✅ Barang '{name}' berhasil ditambahkan![/green]")
-            
-        except ValueError as e:
-            console.print(f"[red]❌ Input tidak valid: {e}[/red]")
+            console.print(f"[cyan]Stok: {stock} unit[/cyan]")
+            console.print(f"[yellow]Harga beli: Rp {price:,.0f}[/yellow]")
+            console.print(f"[red]Harga jual: Rp {sell_price:,.0f}[/red]")
+
         except Exception as e:
             console.print(f"[red]❌ Terjadi kesalahan: {e}[/red]")
-    
+
+        input("Tekan Enter untuk melanjutkan...")
+
     def edit_item(self):
         """
         Edit barang milik supplier
@@ -142,52 +207,93 @@ class SupplierDashboard:
             console.print("[yellow]Anda belum memiliki barang yang terdaftar.[/yellow]")
             return
         
-        # Tampilkan daftar barang supplier
         console.print("\n[cyan]Barang Anda:[/cyan]")
-        for i, item_name in enumerate(supplier_items.keys(), 1):
+        item_names = list(supplier_items.keys())
+        for i, item_name in enumerate(item_names, 1):
             console.print(f"{i}. {item_name}")
         
         try:
-            choice = int(Prompt.ask("Pilih nomor barang yang akan diedit")) - 1
-            item_names = list(supplier_items.keys())
+            choice = validate_input("Pilih nomor barang yang akan diedit: ", allow_empty=False, input_type="int") - 1
             
             if 0 <= choice < len(item_names):
                 selected_item_name = item_names[choice]
                 item_data = supplier_items[selected_item_name]
                 
                 console.print(f"\n[cyan]Mengedit: {selected_item_name}[/cyan]")
-                console.print("Tekan Enter untuk tidak mengubah nilai")
+                console.print("Kosongkan untuk menggunakan nilai default")
                 
-                # Edit fields
-                new_name = Prompt.ask("Nama barang baru", default=selected_item_name)
-                new_category = Prompt.ask("Kategori baru", default=item_data.get('category', ''))
-                new_stock = Prompt.ask("Stok baru", default=str(item_data.get('stock', 0)))
-                new_price = Prompt.ask("Harga beli baru", default=str(item_data.get('price', 0)))
-                new_sell_price = Prompt.ask("Harga jual baru", default=str(item_data.get('sellPrice', 0)))
-                new_desc = Prompt.ask("Deskripsi baru", default=item_data.get('desc', ''))
-                new_status = Prompt.ask("Status baru", default=item_data.get('status', 'aktif'), 
-                                      choices=["aktif", "non-aktif"])
+                new_name = validate_input(f"Nama barang baru (default: {selected_item_name}): ", allow_empty=True)
+                if not new_name:
+                    new_name = selected_item_name
                 
-                # Update data
+                current_category = item_data.get('category', '')
+                new_category = validate_input(f"Kategori baru (default: {current_category}): ", allow_empty=True)
+                if not new_category:
+                    new_category = current_category
+                
+                current_stock = str(item_data.get('stock', 0))
+                stock_input = validate_input(f"Stok baru (default: {current_stock}): ", allow_empty=True)
+                if stock_input:
+                    new_stock = validate_input("", allow_empty=False, input_type="int") if stock_input else int(current_stock)
+                else:
+                    new_stock = int(current_stock)
+                
+                current_price = str(item_data.get('price', 0))
+                price_input = validate_input(f"Harga beli baru (default: {current_price}): ", allow_empty=True)
+                if price_input:
+                    try:
+                        new_price = float(price_input)
+                        if new_price < 0:
+                            console.print("[red]❌ Harga tidak boleh negatif![/red]")
+                            return
+                    except ValueError:
+                        console.print("[red]❌ Harga harus berupa angka![/red]")
+                        return
+                else:
+                    new_price = float(current_price)
+                
+                current_sell_price = str(item_data.get('sellPrice', 0))
+                sell_price_input = validate_input(f"Harga jual baru (default: {current_sell_price}): ", allow_empty=True)
+                if sell_price_input:
+                    try:
+                        new_sell_price = float(sell_price_input)
+                        if new_sell_price < 0:
+                            console.print("[red]❌ Harga tidak boleh negatif![/red]")
+                            return
+                    except ValueError:
+                        console.print("[red]❌ Harga harus berupa angka![/red]")
+                        return
+                else:
+                    new_sell_price = float(current_sell_price)
+                
+                current_desc = item_data.get('desc', '')
+                new_desc = validate_input(f"Deskripsi baru (default: {current_desc}): ", allow_empty=True)
+                if not new_desc:
+                    new_desc = current_desc
+                
+                current_status = item_data.get('status', 'aktif')
+                new_status = validate_input(f"Status baru (aktif/non-aktif, default: {current_status}): ", allow_empty=True, choices=["aktif", "non-aktif", ""])
+                if not new_status:
+                    new_status = current_status
+                
                 updated_data = item_data.copy()
                 updated_data.update({
                     'name': new_name,
                     'category': new_category,
-                    'stock': int(new_stock),
-                    'price': float(new_price),
-                    'sellPrice': float(new_sell_price),
+                    'stock': new_stock,
+                    'price': new_price,
+                    'sellPrice': new_sell_price,
                     'desc': new_desc,
                     'status': new_status
                 })
                 
-                # Simpan perubahan
                 self.items_manager.update_item(selected_item_name, updated_data)
                 console.print(f"[green]✅ Barang berhasil diupdate![/green]")
                 
             else:
-                console.print("[red]Pilihan tidak valid![/red]")
+                console.print("[red]❌ Pilihan tidak valid![/red]")
                 
-        except (ValueError, IndexError) as e:
+        except Exception as e:
             console.print(f"[red]❌ Input tidak valid: {e}[/red]")
     
     def delete_item(self):
@@ -201,28 +307,29 @@ class SupplierDashboard:
             console.print("[yellow]Anda belum memiliki barang yang terdaftar.[/yellow]")
             return
         
-        # Tampilkan daftar barang supplier
         console.print("\n[cyan]Barang Anda:[/cyan]")
-        for i, item_name in enumerate(supplier_items.keys(), 1):
+        item_names = list(supplier_items.keys())
+        for i, item_name in enumerate(item_names, 1):
             console.print(f"{i}. {item_name}")
         
         try:
-            choice = int(Prompt.ask("Pilih nomor barang yang akan dihapus")) - 1
-            item_names = list(supplier_items.keys())
+            choice = validate_input("Pilih nomor barang yang akan dihapus: ", allow_empty=False, input_type="int") - 1
             
             if 0 <= choice < len(item_names):
                 selected_item_name = item_names[choice]
                 
-                if Confirm.ask(f"Apakah Anda yakin ingin menghapus '{selected_item_name}'?"):
+                confirm = validate_input(f"Apakah Anda yakin ingin menghapus '{selected_item_name}'? (y/n): ", allow_empty=False, choices=["y", "n", "Y", "N"])
+                
+                if confirm.lower() == 'y':
                     self.items_manager.delete_item(selected_item_name)
                     console.print(f"[green]✅ Barang '{selected_item_name}' berhasil dihapus![/green]")
                 else:
                     console.print("[yellow]Penghapusan dibatalkan.[/yellow]")
                     
             else:
-                console.print("[red]Pilihan tidak valid![/red]")
+                console.print("[red]❌ Pilihan tidak valid![/red]")
                 
-        except (ValueError, IndexError) as e:
+        except Exception as e:
             console.print(f"[red]❌ Input tidak valid: {e}[/red]")
             
         
@@ -238,7 +345,7 @@ class SupplierDashboard:
     [bold green]4.[/bold green] Kembali
     """)
         
-        pilihan = Prompt.ask("Pilih opsi", choices=["1", "2", "3", "4"])
+        pilihan = validate_input("Pilih opsi (1-4): ", allow_empty=False, choices=["1", "2", "3", "4"])
 
         supplier_items = self.get_supplier_items()
         
@@ -270,23 +377,19 @@ class SupplierDashboard:
             )
 
         console.print(table)
-        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+        input("Tekan Enter untuk kembali...")
     
     def menu_cari_barang(self):
         console.print("\n[bold green]-- Cari Barang Anda --[/bold green]")
         
-        search_term = Prompt.ask("Masukkan nama barang yang dicari")
-        if not search_term.strip():
-            console.print("[red]Kata kunci pencarian tidak boleh kosong.[/red]")
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-            return
+        search_term = validate_input("Masukkan nama barang yang dicari: ", allow_empty=False)
         
         supplier_items = self.get_supplier_items()
         hasil = {name: data for name, data in supplier_items.items() if search_term.lower() in name.lower()}
         
         if not hasil:
             console.print(f"[yellow]Tidak ditemukan barang dengan kata kunci '{search_term}'.[/yellow]")
-            Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
+            input("Tekan Enter untuk kembali...")
             return
         
         table = Table(title=f"Hasil Pencarian Barang Anda: '{search_term}'")
@@ -306,9 +409,7 @@ class SupplierDashboard:
             )
         
         console.print(table)
-        Prompt.ask("[bold yellow]Tekan enter untuk kembali[/bold yellow]")
-
-
+        input("Tekan Enter untuk kembali...")
 
 
 def supplier_main_menu(supplier_username: str, supplier_name: str):
@@ -328,16 +429,13 @@ def supplier_main_menu(supplier_username: str, supplier_name: str):
 [bold green]1.[/bold green] Kelola Barang
 [bold green]2.[/bold green] Keluar App
 """)
-        pilihan = input("Masukkan pilihan (1-2): ")
+        pilihan = validate_input("Masukkan pilihan (1-2): ", allow_empty=False, choices=["1", "2"])
 
         if pilihan == "1":
             menu_barang_supplier(dashboard)
         elif pilihan == "2":
             console.print("[bold red]Keluar dari aplikasi...[/bold red]")
             break
-        else:
-            console.print("[bold red]Pilihan tidak valid![/bold red]")
-            input("Tekan Enter untuk melanjutkan...")
 
 def menu_barang_supplier(dashboard: SupplierDashboard):
     """
@@ -355,7 +453,7 @@ def menu_barang_supplier(dashboard: SupplierDashboard):
 [bold green]6.[/bold green] Cari Daftar Barang
 [bold green]7.[/bold green] Kembali                     
 """)
-        pilihan = input("Masukkan pilihan (1-7): ")
+        pilihan = validate_input("Masukkan pilihan (1-7): ", allow_empty=False, choices=["1", "2", "3", "4", "5", "6", "7"])
         
         if pilihan == "1":
             dashboard.add_item()
@@ -373,12 +471,8 @@ def menu_barang_supplier(dashboard: SupplierDashboard):
             dashboard.menu_sorting_barang()
         elif pilihan == "6":
             dashboard.menu_cari_barang()
-            input("Tekan Enter untuk melanjutkan...")
         elif pilihan == "7":
             break
-        else:
-            console.print("[bold red]Pilihan tidak valid![/bold red]")
-            input("Tekan Enter untuk melanjutkan...")
 
 if __name__ == "__main__":
     supplier_main_menu()

@@ -85,12 +85,13 @@ class UserManager:
         except Exception as e :
             print(e)
     
-    def findUser(self, username:str) -> object : 
-        
-        # hati hati soalnya ini cuman pass refrensi memory, 
-        # jadi kalo lu ngambil data dari sini trs lu rubah langsung, jadi ilang berubah juga
-        
-        return self.items.get(username)
+    def findUser(self, username: str) -> object:
+        username_lower = username.lower()
+        for key, user in self.items.items():
+            if key.lower() == username_lower:
+                return user  
+        return None  
+
     
     def addData(self, dataUser:dict[str:str]) : 
         '''
@@ -158,26 +159,43 @@ class UserManager:
             jika pengguna gak ditemukan, exception akan menangkap error 
             berupa KeyError
         '''
-        try :
-            self.items.pop(username)
-            self.changeData()
+        try:
+            username_lower = username.lower()
+            for key in list(self.items.keys()):
+                if key.lower() == username_lower:
+                    self.items.pop(key)
+                    self.changeData()
+                    print(f"Username '{key}' berhasil dihapus.")
+                    return
+            raise KeyError("Username tidak ditemukan")
         except Exception as e:
-            print(f"Data username tidak ditemukan : {e}")
+            print(f"Data username tidak ditemukan: {e}")
     
-    def editUser(self, username: str, keyToChange: str, newValue:str):
+    def editUser(self, username: str, keyToChange: str, newValue: str):
         userToEdit = self.findUser(username)
         if userToEdit is None:
             print("username tidak ditemukan!")
             return
 
         keyToChange = keyToChange.lower()
+
         if not newValue:
-            print("Nilai baru tidak valid!")
+            print("Tidak ada perubahan untuk field ini.")
             return
 
-        # gara gara username tuh key nya, jadi gabisa langsung dirubah gitu
+        # Cari key asli yang ada di dictionary dengan case insensitive
+        key_in_items = None
+        for key in self.items.keys():
+            if key.lower() == username.lower():
+                key_in_items = key
+                break
+
+        if key_in_items is None:
+            print(f"Data username '{username}' sudah tidak ada.")
+            return
+
         if keyToChange == "username":
-            user_data = self.items.pop(username)
+            user_data = self.items.pop(key_in_items)
             user_data.changeUsername(newValue)
             self.items[newValue] = user_data
             print("Username berhasil diubah!")
@@ -187,14 +205,18 @@ class UserManager:
                 "email": (userToEdit.changeEmail, "Email berhasil diubah!"),
                 "password": (userToEdit.changePassword, "Password berhasil diubah!")
             }
-            
+
             if keyToChange in actions:
                 action_func, success_msg = actions[keyToChange]
                 action_func(newValue)
+                print(success_msg)
             else:
                 print("Key nya tidak valid!")
                 return
+
         self.changeData()
+
+
         
     def getAllData(self) -> dict[str:object] : 
         temp = {}

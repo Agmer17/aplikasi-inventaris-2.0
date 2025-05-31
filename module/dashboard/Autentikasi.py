@@ -58,27 +58,22 @@ def login_screen(listData: UserManager):
         console.clear()
         reset_terminal_state()
 
-        # Tampilkan header dengan ASCII Art
         banner_panel = Panel.fit(ascii_banner(), style="bold #e5c07b", border_style="#e5c07b")
         console.print(Align.center(banner_panel))
 
-        # Penjelasan di bawah logo
         subtitle = Text("Welcome to Terminal Login", style="bold white")
         console.print(Align.center(subtitle))
 
         console.print("\n")
 
-        # Form input username dan password
         username = Prompt.ask("[bold green]> Enter your username")
         password = Prompt.ask("[bold green]> Enter your password", password=True)
 
         currentUser: object = listData.findUser(username)
-        # Simulasi proses login
         console.print("\n[bold yellow]⏳ Logging in...[/bold yellow]")
         time.sleep(1)
         
 
-        # Hasil login dummy
         if currentUser and password == currentUser.password:
             console.print(Panel.fit(f"✅ [bold green]Login successful, welcome [white]{username}[/white]![/bold green]", border_style="green"))
             break
