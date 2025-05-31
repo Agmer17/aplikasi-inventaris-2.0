@@ -14,8 +14,6 @@ class TransactionManager:
     """
     def __init__(self, filename: str = "data/transaksi.json"):
         self.path = filename
-        # Buat direktori jika belum ada
-        # Load transaksi dari file jika ada
         self.transactions = self.load_transactions_from_json(filename)
     
     def add_transaction(self, transaction: Transaction) -> None:
@@ -34,7 +32,6 @@ class TransactionManager:
                     f"tidak cukup untuk mengurangi {transaction.quantity}.")
                 return
         
-        # Jika type masuk, atau type keluar tapi stok cukup
         self.transactions.append(transaction)
         print(f"✅ Transaksi {transaction.id} berhasil ditambahkan")
         self.save_transactions()
@@ -68,10 +65,8 @@ class TransactionManager:
         if filename is None:
             filename = self.path
             
-        # Konversi daftar objek Transaction menjadi daftar dictionary
         transactions_data = [transaction.getAllData() for transaction in transactions]
         
-        # Tulis ke file JSON
         with open(filename, 'w', encoding='utf-8') as file:
             json.dump(transactions_data, file, indent=4, ensure_ascii=False)
         
@@ -91,7 +86,6 @@ class TransactionManager:
         try:
             if not os.path.exists(filename):
                 print(f"File {filename} tidak ditemukan. Membuat file baru.")
-                # Buat file kosong dengan array JSON kosong
                 with open(filename, 'w', encoding='utf-8') as file:
                     json.dump([], file)
                 return []
@@ -99,7 +93,6 @@ class TransactionManager:
             with open(filename, 'r', encoding='utf-8') as file:
                 transactions_data = json.load(file)
             
-            # Konversi setiap dictionary menjadi objek Transaction
             transactions = []
             for data in transactions_data:
                 try:
@@ -107,7 +100,7 @@ class TransactionManager:
                         itemName=data['itemName'],
                         type=data['type'],
                         quantity=data['quantity'],
-                        supplier=data.get('supplier', ""),  # Default kosong jika tidak ada
+                        supplier=data.get('supplier', ""),  
                         pricePerItem=data['pricePerItem'],
                         date=data.get('date'),
                         customer=data.get('customer'),  

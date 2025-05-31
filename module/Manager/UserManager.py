@@ -183,7 +183,6 @@ class UserManager:
             print("Tidak ada perubahan untuk field ini.")
             return
 
-        # Cari key asli yang ada di dictionary dengan case insensitive
         key_in_items = None
         for key in self.items.keys():
             if key.lower() == username.lower():
