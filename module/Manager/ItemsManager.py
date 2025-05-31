@@ -143,7 +143,7 @@ class ItemsManager :
         new_name = item_data["name"]
         if item_name != new_name:
             if new_name in items:
-                print("Item dengan nama baru sudah ada!")  # bisa ganti jadi error handling
+                print("Item dengan nama baru sudah ada!")  
                 return
             del items[item_name]
         
@@ -224,7 +224,7 @@ class ItemsManager :
         elif by == "stock":
             key_func = lambda x: (stock_data.get(x[0], int(x[1]["stock"])) if stock_data else int(x[1]["stock"]), x[1]["name"].lower())
         else:
-            return item_list  # Kriteria tidak dikenali, kembalikan tanpa pengurutan
+            return item_list 
 
         return self.quick_sort(item_list, key_func=key_func, reverse=reverse)
 
